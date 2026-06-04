@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Members — Hubstaff</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/mockup.css?v=4" />
+</head>
+<body>
+
+<div id="shell-content">
+
+  <!-- ── Page header ──────────────────────────────────────────── -->
+  <div class="pg-header">
+    <div class="pg-header-top">
+      <div>
+        <h1 class="pg-title">Members</h1>
+      </div>
+      <div class="pg-actions-wrap">
+        <div class="pg-actions">
+          <button class="btn btn--ghost" data-change="Different design — uses a ghost button style (bordered, no fill) instead of a plain text link.">
+            Onboarding status
+          </button>
+          <button class="btn btn--outline-primary" data-change="New — opens a modal to manually merge any two members into one profile.">
+            <span class="material-symbols-rounded">merge</span>
+            Merge member
+          </button>
+          <div class="add-member-wrap" id="add-member-wrap" data-change="Redesigned — Invite and Import are now grouped into a single split dropdown instead of two separate buttons.">
+            <button class="btn btn--primary" id="add-member-btn" aria-haspopup="true" aria-expanded="false">
+              <span class="material-symbols-rounded">person_add</span>
+              Add member
+              <span class="material-symbols-rounded add-member-chevron">expand_more</span>
+            </button>
+            <div class="add-member-panel" id="add-member-panel" hidden>
+              <button class="add-member-item">
+                <span class="material-symbols-rounded">person_add</span>
+                Invite members
+              </button>
+              <button class="add-member-item">
+                <span class="material-symbols-rounded">upload</span>
+                Import members
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ── Tabs ──────────────────────────────────────────────── -->
+    <div class="tab-bar">
+      <button class="tab-bar__item tab-bar__item--active">Members <span class="tab-bar__count" id="tab-members-count">(100)</span></button>
+      <button class="tab-bar__item">Invites <span class="tab-bar__count">(0)</span></button>
+    </div>
+  </div>
+
+  <!-- ── Page body ────────────────────────────────────────────── -->
+  <div class="pg-body">
+
+    <!-- ── Summary cards ──────────────────────────────────────── -->
+    <div class="summary-row">
+
+      <div class="scard scard--action" id="card-online" role="button" tabindex="0" aria-label="Show online members" data-change="New — shows how many members are currently tracking. Didn't exist on the previous Members page.">
+        <div class="scard__label">MEMBERS ONLINE</div>
+        <div class="scard__content">
+          <div class="scard__title">
+            <span class="scard__dot scard__dot--green"></span>
+            <span class="scard__value"><span id="stat-active-val">5</span> / <span id="stat-total-val">0</span></span>
+          </div>
+          <span class="scard__action" id="online-card-cta">Show</span>
+        </div>
+      </div>
+
+      <div class="scard" data-change="Redesigned — previously just a text phrase in the page header (e.g. '8/10 seats'). Now a dedicated summary card.">
+        <div class="scard__label">SEATS OCCUPIED</div>
+        <div class="scard__content">
+          <div class="scard__title">
+            <span class="material-symbols-rounded scard__icon-sym">business</span>
+            <span class="scard__value"><span id="stat-seats-val">8</span> / <span id="stat-seats-total">10</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="scard scard--action" id="card-grace" role="button" tabindex="0" aria-label="View members billing soon">
+        <div class="scard__label">
+          BILLING SOON
+          <span
+            class="scard__label-icon"
+            data-tooltip="These members are in their free period and will become paid seats soon."
+            aria-label="More info about billing soon"
+          >
+            <span class="material-symbols-rounded">info</span>
+          </span>
+        </div>
+        <div class="scard__content">
+          <div class="scard__title">
+            <div class="scard__warn-badge">
+              <span class="material-symbols-rounded">warning</span>
+            </div>
+            <span class="scard__value">2</span>
+          </div>
+          <span class="scard__action" id="grace-card-cta">Show</span>
+        </div>
+      </div>
+
+      <div class="scard" id="card-merge">
+        <div class="scard__label">MERGE SUGGESTIONS</div>
+        <div class="scard__content">
+          <div class="scard__title">
+            <span class="material-symbols-rounded scard__icon-sym">merge</span>
+            <span class="scard__value">3</span>
+          </div>
+          <span class="scard__action">Review</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Table ──────────────────────────────────────────────── -->
+    <div class="table-card">
+
+      <div class="table-toolbar">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <span class="material-symbols-rounded search-box__ico">search</span>
+            <input class="search-box__input" type="text" id="search-input" placeholder="Search members…" />
+          </div>
+          <button class="btn btn--ghost btn--sm" id="btn-filters" data-change="Moved — previously a button in the page header. Now lives inside the table toolbar, closer to the data it filters.">
+            <span class="material-symbols-rounded">filter_list</span>
+            Filters
+            <span class="filter-badge" id="filter-badge" hidden>1</span>
+          </button>
+        </div>
+        <div class="toolbar-right">
+          <button class="table-icon-btn" aria-label="Export" data-tooltip="Export" data-change="Moved — previously a button in the page header alongside other actions. Now lives inside the table toolbar as an icon button.">
+            <span class="material-symbols-rounded">download</span>
+          </button>
+          <div class="col-picker-wrapper" id="col-picker-wrapper">
+            <button class="table-icon-btn" id="col-picker-btn" aria-label="Show/hide columns" data-tooltip="Show/hide columns">
+              <span class="material-symbols-rounded">view_column</span>
+            </button>
+            <div class="col-picker-panel" id="col-picker-panel" hidden></div>
+            <div class="cp-flyout" id="cp-flyout" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="mtable">
+          <thead id="members-thead"></thead>
+          <tbody id="members-tbody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer" id="table-footer"></div>
+    </div>
+
+  </div><!-- /.pg-body -->
+</div><!-- /#shell-content -->
+
+<!-- ── Merge members modal ─────────────────────────────────────── -->
+<div class="modal-backdrop" id="manual-merge-modal" hidden>
+  <div class="modal modal--mm" role="dialog" aria-modal="true" aria-labelledby="mm-title">
+
+    <div class="modal__header">
+      <h2 class="modal__title" id="mm-title">Merge members</h2>
+      <button class="modal__close" id="mm-close" aria-label="Close">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </div>
+
+    <div class="mm__body">
+
+      <!-- Selectors row -->
+      <div class="mm__selectors">
+
+        <div class="mm__col" id="mm-source-col">
+          <div class="mm__col-label">Merge from (Duplicate)</div>
+          <div class="mm__select" id="mm-source-select" role="button" tabindex="0">
+            <span class="mm__select-val" id="mm-source-val">Select member</span>
+            <span class="material-symbols-rounded mm__chevron">keyboard_arrow_down</span>
+          </div>
+          <div class="mm-dropdown" id="mm-source-dropdown" hidden>
+            <div class="mm-search-wrap">
+              <span class="material-symbols-rounded">search</span>
+              <input class="mm-search" type="text" id="mm-source-search" placeholder="Search members…" autocomplete="off" />
+            </div>
+            <div class="mm-list" id="mm-source-list"></div>
+          </div>
+        </div>
+
+        <div class="mm__arrow" aria-hidden="true">
+          <span class="material-symbols-rounded">arrow_forward</span>
+        </div>
+
+        <div class="mm__col mm__col--locked" id="mm-dest-col">
+          <div class="mm__col-label">Merge to (Main Profile)</div>
+          <div class="mm__select mm__select--locked" id="mm-dest-select" role="button" tabindex="-1">
+            <span class="mm__select-val" id="mm-dest-val">Select member</span>
+            <span class="mm__spinner" id="mm-dest-spinner" hidden></span>
+            <span class="material-symbols-rounded mm__chevron" id="mm-dest-chevron">keyboard_arrow_down</span>
+          </div>
+          <div class="mm-dropdown" id="mm-dest-dropdown" hidden>
+            <div class="mm-search-wrap">
+              <span class="material-symbols-rounded">search</span>
+              <input class="mm-search" type="text" id="mm-dest-search" placeholder="Search members…" autocomplete="off" />
+            </div>
+            <div class="mm-list" id="mm-dest-list"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Shared height container: explanation text sits in flow; cards overlay absolutely -->
+      <div class="mm__content-area" id="mm-content-area">
+
+        <div class="mm__explanation" id="mm-explanation">
+          <p class="mm__expl-title">When you merge the duplicate into the main profile:</p>
+          <ul class="mm__expl-list">
+            <li>
+              <span class="material-symbols-rounded">check_circle</span>
+              Historical time tracking data will be kept in the main profile.
+            </li>
+            <li>
+              <span class="material-symbols-rounded">check_circle</span>
+              Duplicate profiles will be removed from the organization.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Cards overlay the same space as the explanation above -->
+        <div class="mm__cards" id="mm-cards">
+          <div class="mm__card-slot">
+            <div class="mm__card" id="mm-src-card" hidden>
+            <div class="mm__card-inner">
+              <div class="avatar mm__avatar" id="mm-src-avatar"></div>
+              <div class="mm__card-info">
+                <span class="mm__card-name" id="mm-src-name"></span>
+                <span class="mm__card-email" id="mm-src-email"></span>
+              </div>
+            </div>
+            <span class="pill mm__card-pill" id="mm-src-pill"></span>
+          </div>
+        </div>
+        <div class="mm__card-spacer" aria-hidden="true"></div>
+        <div class="mm__card-slot">
+          <div class="mm__card" id="mm-dst-card" hidden>
+            <div class="mm__card-inner">
+              <div class="avatar mm__avatar" id="mm-dst-avatar"></div>
+              <div class="mm__card-info">
+                <span class="mm__card-name" id="mm-dst-name"></span>
+                <span class="mm__card-email" id="mm-dst-email"></span>
+              </div>
+            </div>
+            <span class="pill mm__card-pill" id="mm-dst-pill"></span>
+          </div>
+        </div>
+        </div><!-- /.mm__cards -->
+
+      </div><!-- /.mm__content-area -->
+
+      <!-- Warning (always visible) -->
+      <div class="mm__alert">This action cannot be undone. Merge can take up to 24h to transfer the data.</div>
+
+    </div>
+
+    <div class="modal__footer">
+      <button class="btn btn--link-primary" id="mm-learn-more">Learn more</button>
+      <div class="mm__footer-right">
+        <button class="btn btn--ghost" id="mm-cancel">Cancel</button>
+        <button class="btn btn--amber" id="mm-confirm" disabled>Merge and delete duplicate</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Merge suggestions modal ─────────────────────────────────── -->
+<div class="modal-backdrop" id="merge-modal" hidden>
+  <div class="modal modal--ms" role="dialog" aria-modal="true" aria-labelledby="ms-title">
+
+    <div class="modal__header">
+      <div>
+        <h2 class="modal__title" id="ms-title">Merge suggestions</h2>
+        <p class="modal__counter" id="modal-counter"></p>
+      </div>
+      <button class="modal__close" id="modal-close" aria-label="Close">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </div>
+
+    <!-- ── List view ──────────────────────────────────────────── -->
+    <div id="ms-list-view">
+      <p class="modal__desc">
+        These silent accounts may belong to existing members. Review each suggestion and merge or ignore as needed.
+      </p>
+      <div class="ms-list" id="ms-list"></div>
+      <div class="modal__footer ms-list-footer">
+        <button class="btn btn--ghost" id="ms-close-btn">Close</button>
+      </div>
+    </div>
+
+    <!-- ── Detail view ────────────────────────────────────────── -->
+    <div id="ms-detail-view" hidden>
+      <button class="ms-back-btn" id="ms-back-btn">
+        <span class="material-symbols-rounded">arrow_back</span>
+        Back to suggestions
+      </button>
+      <p class="modal__desc">
+        This silent account doesn't match any existing member yet. We suggest merging it into the account on the right.
+      </p>
+      <div class="ms-detail-cards">
+
+        <div class="mm__card">
+          <div class="mm__card-inner">
+            <div class="avatar mm__avatar" id="ms-src-avatar"></div>
+            <div class="mm__card-info">
+              <span class="mm__card-name" id="src-name"></span>
+              <span class="mm__card-email" id="src-email"></span>
+            </div>
+          </div>
+          <span class="pill mm__card-pill" id="ms-src-pill"></span>
+        </div>
+
+        <div class="ms-detail-arrow" aria-hidden="true">
+          <span class="material-symbols-rounded">arrow_forward</span>
+        </div>
+
+        <div class="mm__card">
+          <div class="mm__card-inner">
+            <div class="avatar mm__avatar" id="dest-avatar"></div>
+            <div class="mm__card-info">
+              <span class="mm__card-name" id="dest-name"></span>
+              <span class="mm__card-email" id="dest-email"></span>
+            </div>
+          </div>
+          <span class="pill mm__card-pill" id="ms-dst-pill"></span>
+        </div>
+
+      </div>
+      <p class="modal__footnote" id="modal-footnote"></p>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" id="btn-skip">Ignore this suggestion</button>
+        <button class="btn btn--primary" id="btn-merge">
+          Merge accounts
+          <span class="material-symbols-rounded">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Toast ───────────────────────────────────────────────────── -->
+<div class="toast" id="toast" hidden>
+  <span class="material-symbols-rounded toast__icon">check_circle</span>
+  <span id="toast-text"></span>
+</div>
+
+<script src="assets/hubstaff-shell.js"></script>
+<script>
+  HubstaffShell.init({ activeItem: 'people', activeSubItem: 'Members', logoHref: '#' });
+  document.body.classList.add('hs-expanded');
+</script>
+<script src="assets/members-data.js?v=2"></script>
+<script src="assets/mockup.js?v=4"></script>
+
+<!-- ── Highlight changes — remove this script + CSS block to disable ────── -->
+<div class="highlight-tooltip" id="highlight-tooltip" hidden></div>
+<script id="highlight-changes">
+(function () {
+  const tooltip = document.getElementById('highlight-tooltip');
+
+  // ── Toggle ──────────────────────────────────────────────────────
+  const toggleEl = document.createElement('div');
+  toggleEl.className = 'silent-toggle';
+  toggleEl.setAttribute('role', 'switch');
+  toggleEl.setAttribute('aria-checked', 'false');
+  toggleEl.setAttribute('aria-label', 'Highlight changes');
+  toggleEl.setAttribute('tabindex', '0');
+  toggleEl.innerHTML = '<div class="silent-toggle__track"><div class="silent-toggle__thumb"></div></div><span class="silent-toggle__label">Highlight changes</span>';
+
+  function applyToggle(on) {
+    toggleEl.classList.toggle('is-on', on);
+    toggleEl.setAttribute('aria-checked', String(on));
+    document.body.classList.toggle('highlight-mode', on);
+    if (!on) tooltip.hidden = true;
+  }
+
+  toggleEl.addEventListener('click', () => applyToggle(!toggleEl.classList.contains('is-on')));
+  toggleEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); applyToggle(!toggleEl.classList.contains('is-on')); }
+  });
+
+  // Inject next to the Silent app toggle
+  const topbarLeft = document.querySelector('#hs-topbar .hs-topbar-left');
+  if (topbarLeft) {
+    const divider = document.createElement('div');
+    divider.className = 'hs-topbar-divider';
+    topbarLeft.appendChild(divider);
+    topbarLeft.appendChild(toggleEl);
+  }
+
+  // ── Tooltip ─────────────────────────────────────────────────────
+  document.addEventListener('mousemove', e => {
+    if (!document.body.classList.contains('highlight-mode')) return;
+    const target = e.target.closest('[data-change]');
+    if (!target) { tooltip.hidden = true; return; }
+
+    tooltip.textContent = target.dataset.change;
+    tooltip.hidden = false;
+
+    const pad = 14;
+    const tw = tooltip.offsetWidth;
+    const th = tooltip.offsetHeight;
+    let x = e.clientX + pad;
+    let y = e.clientY + pad;
+    if (x + tw > window.innerWidth - 8)  x = e.clientX - tw - pad;
+    if (y + th > window.innerHeight - 8) y = e.clientY - th - pad;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top  = y + 'px';
+  });
+
+  document.addEventListener('mouseleave', () => { tooltip.hidden = true; });
+})();
+</script>
+</body>
+</html>
