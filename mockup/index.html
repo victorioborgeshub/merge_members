@@ -63,55 +63,62 @@
     <!-- ── Summary cards ──────────────────────────────────────── -->
     <div class="summary-row">
 
-      <div class="scard scard--action" id="card-online" role="button" tabindex="0" aria-label="Show online members" data-change="New — shows how many members are currently tracking. Didn't exist on the previous Members page.">
-        <div class="scard__label">MEMBERS ONLINE</div>
+      <div class="scard scard--members" id="card-members" data-change="Redesigned — Members Online, Seats Occupied, and Billing Soon consolidated into a single Members card with four segments.">
+        <div class="scard__label">MEMBERS</div>
         <div class="scard__content">
-          <div class="scard__title">
-            <span class="scard__dot scard__dot--green"></span>
-            <span class="scard__value"><span id="stat-active-val">5</span> / <span id="stat-total-val">0</span></span>
-          </div>
-          <span class="scard__action" id="online-card-cta">Show</span>
-        </div>
-      </div>
-
-      <div class="scard" data-change="Redesigned — previously just a text phrase in the page header (e.g. '8/10 seats'). Now a dedicated summary card.">
-        <div class="scard__label">SEATS OCCUPIED</div>
-        <div class="scard__content">
-          <div class="scard__title">
-            <span class="material-symbols-rounded scard__icon-sym">business</span>
-            <span class="scard__value"><span id="stat-seats-val">8</span> / <span id="stat-seats-total">10</span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="scard scard--action" id="card-grace" role="button" tabindex="0" aria-label="View members billing soon">
-        <div class="scard__label">
-          BILLING SOON
-          <span
-            class="scard__label-icon"
-            data-tooltip="These members are in their free period and will become paid seats soon."
-            aria-label="More info about billing soon"
-          >
-            <span class="material-symbols-rounded">info</span>
-          </span>
-        </div>
-        <div class="scard__content">
-          <div class="scard__title">
-            <div class="scard__warn-badge">
-              <span class="material-symbols-rounded">warning</span>
+          <div class="scard__segment">
+            <div class="scard__seg-icon-box">
+              <span class="material-symbols-rounded">group</span>
             </div>
-            <span class="scard__value">2</span>
+            <div class="scard__seg-text">
+              <span class="scard__seg-value" id="stat-total">—</span>
+              <span class="scard__seg-label">Total members</span>
+            </div>
           </div>
-          <span class="scard__action" id="grace-card-cta">Show</span>
+          <div class="scard__seg-divider"></div>
+          <div class="scard__segment">
+            <div class="scard__seg-icon-box">
+              <span class="material-symbols-rounded">receipt</span>
+            </div>
+            <div class="scard__seg-text">
+              <span class="scard__seg-value"><span id="stat-seats-occ">—</span> / <span id="stat-seats-cap">—</span></span>
+              <span class="scard__seg-label">Paid seats</span>
+            </div>
+          </div>
+          <div class="scard__seg-divider"></div>
+          <div class="scard__segment">
+            <div class="scard__seg-icon-box">
+              <span class="material-symbols-rounded">money_off</span>
+            </div>
+            <div class="scard__seg-text">
+              <span class="scard__seg-value" id="stat-unbilled">—</span>
+              <span class="scard__seg-label">Unpaid seats</span>
+            </div>
+          </div>
+          <div class="scard__seg-divider"></div>
+          <div class="scard__segment">
+            <div class="scard__seg-icon-box">
+              <span class="material-symbols-rounded">money_off</span>
+            </div>
+            <div class="scard__seg-text">
+              <span class="scard__seg-value" id="stat-viewers">—</span>
+              <span class="scard__seg-label">Free seats</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="scard" id="card-merge">
         <div class="scard__label">MERGE SUGGESTIONS</div>
         <div class="scard__content">
-          <div class="scard__title">
-            <span class="material-symbols-rounded scard__icon-sym">merge</span>
-            <span class="scard__value">3</span>
+          <div class="scard__segment" style="flex: 1">
+            <div class="scard__seg-icon-box">
+              <span class="material-symbols-rounded">merge</span>
+            </div>
+            <div class="scard__seg-text">
+              <span class="scard__seg-value" id="stat-merge-count">3</span>
+              <span class="scard__seg-label">Members</span>
+            </div>
           </div>
           <span class="scard__action">Review</span>
         </div>
@@ -174,95 +181,111 @@
     <div class="mm__body">
 
       <!-- Selectors row -->
-      <div class="mm__selectors">
+      <div class="mm__grid">
 
         <div class="mm__col" id="mm-source-col">
-          <div class="mm__col-label">Merge from (Duplicate)</div>
-          <div class="mm__select" id="mm-source-select" role="button" tabindex="0">
-            <span class="mm__select-val" id="mm-source-val">Select member</span>
-            <span class="material-symbols-rounded mm__chevron">keyboard_arrow_down</span>
-          </div>
-          <div class="mm-dropdown" id="mm-source-dropdown" hidden>
-            <div class="mm-search-wrap">
-              <span class="material-symbols-rounded">search</span>
-              <input class="mm-search" type="text" id="mm-source-search" placeholder="Search members…" autocomplete="off" />
+          <div class="mm__col-label">Merge from</div>
+          <div class="mm__select-wrap">
+            <div class="mm__select" id="mm-source-select" role="button" tabindex="0">
+              <span class="mm__select-val" id="mm-source-val">Select member</span>
+              <span class="material-symbols-rounded mm__chevron">keyboard_arrow_down</span>
             </div>
-            <div class="mm-list" id="mm-source-list"></div>
+            <div class="mm-dropdown" id="mm-source-dropdown" hidden>
+              <div class="mm-search-wrap">
+                <span class="material-symbols-rounded">search</span>
+                <input class="mm-search" type="text" id="mm-source-search" placeholder="Search members…" autocomplete="off" />
+              </div>
+              <div class="mm-list" id="mm-source-list"></div>
+            </div>
           </div>
+          <p class="mm__col-helper">Only Silent App members can be merged.</p>
         </div>
 
-        <div class="mm__arrow" aria-hidden="true">
-          <span class="material-symbols-rounded">arrow_forward</span>
-        </div>
+        <div class="mm__grid-spacer" aria-hidden="true"></div>
 
         <div class="mm__col mm__col--locked" id="mm-dest-col">
-          <div class="mm__col-label">Merge to (Main Profile)</div>
-          <div class="mm__select mm__select--locked" id="mm-dest-select" role="button" tabindex="-1">
-            <span class="mm__select-val" id="mm-dest-val">Select member</span>
-            <span class="mm__spinner" id="mm-dest-spinner" hidden></span>
-            <span class="material-symbols-rounded mm__chevron" id="mm-dest-chevron">keyboard_arrow_down</span>
-          </div>
-          <div class="mm-dropdown" id="mm-dest-dropdown" hidden>
-            <div class="mm-search-wrap">
-              <span class="material-symbols-rounded">search</span>
-              <input class="mm-search" type="text" id="mm-dest-search" placeholder="Search members…" autocomplete="off" />
+          <div class="mm__col-label">Merge to</div>
+          <div class="mm__select-wrap">
+            <div class="mm__select mm__select--locked" id="mm-dest-select" role="button" tabindex="-1">
+              <span class="mm__select-val" id="mm-dest-val">Select member</span>
+              <span class="mm__spinner" id="mm-dest-spinner" hidden></span>
+              <span class="material-symbols-rounded mm__chevron" id="mm-dest-chevron">keyboard_arrow_down</span>
             </div>
-            <div class="mm-list" id="mm-dest-list"></div>
+            <div class="mm-dropdown" id="mm-dest-dropdown" hidden>
+              <div class="mm-search-wrap">
+                <span class="material-symbols-rounded">search</span>
+                <input class="mm-search" type="text" id="mm-dest-search" placeholder="Search members…" autocomplete="off" />
+              </div>
+              <div class="mm-list" id="mm-dest-list"></div>
+            </div>
           </div>
+          <p class="mm__col-helper">Only members eligible for merging are shown.</p>
         </div>
 
-      </div>
+      </div><!-- /.mm__grid -->
 
       <!-- Shared height container: explanation text sits in flow; cards overlay absolutely -->
       <div class="mm__content-area" id="mm-content-area">
 
-        <div class="mm__explanation" id="mm-explanation">
-          <p class="mm__expl-title">When you merge the duplicate into the main profile:</p>
-          <ul class="mm__expl-list">
-            <li>
-              <span class="material-symbols-rounded">check_circle</span>
-              Historical time tracking data will be kept in the main profile.
-            </li>
-            <li>
-              <span class="material-symbols-rounded">check_circle</span>
-              Duplicate profiles will be removed from the organization.
-            </li>
-          </ul>
-        </div>
-
-        <!-- Cards overlay the same space as the explanation above -->
-        <div class="mm__cards" id="mm-cards">
-          <div class="mm__card-slot">
+        <!-- Each column holds its own slot + card; arrow always visible between them -->
+        <div class="mm__slot-area">
+          <div class="mm__card-col">
+            <div class="mm__slot mm__slot--src" id="mm-src-slot">
+              <span class="material-symbols-rounded mm__slot-icon">account_circle</span>
+              <span class="mm__slot-label">Duplicate</span>
+            </div>
             <div class="mm__card" id="mm-src-card" hidden>
-            <div class="mm__card-inner">
-              <div class="avatar mm__avatar" id="mm-src-avatar"></div>
-              <div class="mm__card-info">
-                <span class="mm__card-name" id="mm-src-name"></span>
-                <span class="mm__card-email" id="mm-src-email"></span>
+              <div class="mm__card-inner">
+                <div class="avatar mm__avatar" id="mm-src-avatar"></div>
+                <div class="mm__card-info">
+                  <span class="mm__card-name" id="mm-src-name"></span>
+                  <span class="mm__card-email" id="mm-src-email"></span>
+                </div>
               </div>
+              <span class="pill mm__card-pill" id="mm-src-pill"></span>
             </div>
-            <span class="pill mm__card-pill" id="mm-src-pill"></span>
           </div>
-        </div>
-        <div class="mm__card-spacer" aria-hidden="true"></div>
-        <div class="mm__card-slot">
-          <div class="mm__card" id="mm-dst-card" hidden>
-            <div class="mm__card-inner">
-              <div class="avatar mm__avatar" id="mm-dst-avatar"></div>
-              <div class="mm__card-info">
-                <span class="mm__card-name" id="mm-dst-name"></span>
-                <span class="mm__card-email" id="mm-dst-email"></span>
+          <div class="mm__arrow" aria-hidden="true">
+            <span class="material-symbols-rounded">arrow_forward</span>
+          </div>
+          <div class="mm__card-col">
+            <div class="mm__slot mm__slot--dst" id="mm-dst-slot">
+              <span class="material-symbols-rounded mm__slot-icon">account_circle</span>
+              <span class="mm__slot-label">Main profile</span>
+            </div>
+            <div class="mm__card" id="mm-dst-card" hidden>
+              <div class="mm__card-inner">
+                <div class="avatar mm__avatar" id="mm-dst-avatar"></div>
+                <div class="mm__card-info">
+                  <span class="mm__card-name" id="mm-dst-name"></span>
+                  <span class="mm__card-email" id="mm-dst-email"></span>
+                </div>
               </div>
+              <span class="pill mm__card-pill" id="mm-dst-pill"></span>
             </div>
-            <span class="pill mm__card-pill" id="mm-dst-pill"></span>
           </div>
-        </div>
-        </div><!-- /.mm__cards -->
+        </div><!-- /.mm__slot-area -->
+
+        <!-- Copy: always visible -->
+        <div class="mm__copy-divider"></div>
+        <p class="mm__expl-title">Merging combines two profiles into one.</p>
+        <ul class="mm__expl-list">
+          <li>
+            <span class="material-symbols-rounded">check_circle</span>
+            All historical data moves to the main profile.
+          </li>
+          <li>
+            <span class="material-symbols-rounded">check_circle</span>
+            The duplicate profile is permanently deleted.
+          </li>
+          <li>
+            <span class="material-symbols-rounded">check_circle</span>
+            This can't be undone and may take up to 24 hours.
+          </li>
+        </ul>
 
       </div><!-- /.mm__content-area -->
 
-      <!-- Warning (always visible) -->
-      <div class="mm__alert">This action cannot be undone. Merge can take up to 24h to transfer the data.</div>
 
     </div>
 
@@ -293,9 +316,6 @@
 
     <!-- ── List view ──────────────────────────────────────────── -->
     <div id="ms-list-view">
-      <p class="modal__desc">
-        These silent accounts may belong to existing members. Review each suggestion and merge or ignore as needed.
-      </p>
       <div class="ms-list" id="ms-list"></div>
       <div class="modal__footer ms-list-footer">
         <button class="btn btn--ghost" id="ms-close-btn">Close</button>
@@ -304,49 +324,66 @@
 
     <!-- ── Detail view ────────────────────────────────────────── -->
     <div id="ms-detail-view" hidden>
-      <button class="ms-back-btn" id="ms-back-btn">
-        <span class="material-symbols-rounded">arrow_back</span>
-        Back to suggestions
-      </button>
-      <p class="modal__desc">
-        This silent account doesn't match any existing member yet. We suggest merging it into the account on the right.
-      </p>
-      <div class="ms-detail-cards">
-
-        <div class="mm__card">
-          <div class="mm__card-inner">
-            <div class="avatar mm__avatar" id="ms-src-avatar"></div>
-            <div class="mm__card-info">
-              <span class="mm__card-name" id="src-name"></span>
-              <span class="mm__card-email" id="src-email"></span>
+      <div class="mm__slot-area">
+        <div class="mm__card-col">
+          <div class="mm__card">
+            <div class="mm__card-inner">
+              <div class="avatar mm__avatar" id="ms-src-avatar"></div>
+              <div class="mm__card-info">
+                <span class="mm__card-name" id="src-name"></span>
+                <span class="mm__card-email" id="src-email"></span>
+              </div>
             </div>
+            <span class="pill mm__card-pill" id="ms-src-pill"></span>
           </div>
-          <span class="pill mm__card-pill" id="ms-src-pill"></span>
         </div>
-
-        <div class="ms-detail-arrow" aria-hidden="true">
+        <div class="mm__arrow" aria-hidden="true">
           <span class="material-symbols-rounded">arrow_forward</span>
         </div>
-
-        <div class="mm__card">
-          <div class="mm__card-inner">
-            <div class="avatar mm__avatar" id="dest-avatar"></div>
-            <div class="mm__card-info">
-              <span class="mm__card-name" id="dest-name"></span>
-              <span class="mm__card-email" id="dest-email"></span>
+        <div class="mm__card-col">
+          <div class="mm__card">
+            <div class="mm__card-inner">
+              <div class="avatar mm__avatar" id="dest-avatar"></div>
+              <div class="mm__card-info">
+                <span class="mm__card-name" id="dest-name"></span>
+                <span class="mm__card-email" id="dest-email"></span>
+              </div>
             </div>
+            <span class="pill mm__card-pill" id="ms-dst-pill"></span>
           </div>
-          <span class="pill mm__card-pill" id="ms-dst-pill"></span>
         </div>
-
       </div>
-      <p class="modal__footnote" id="modal-footnote"></p>
+      <div class="mm__copy-divider"></div>
+      <p class="mm__expl-title">Merging combines two profiles into one.</p>
+      <ul class="mm__expl-list">
+        <li>
+          <span class="material-symbols-rounded">check_circle</span>
+          All historical data moves to the main profile.
+        </li>
+        <li>
+          <span class="material-symbols-rounded">check_circle</span>
+          The duplicate profile is permanently deleted.
+        </li>
+        <li>
+          <span class="material-symbols-rounded">check_circle</span>
+          This can't be undone and may take up to 24 hours.
+        </li>
+      </ul>
       <div class="modal__footer">
-        <button class="btn btn--ghost" id="btn-skip">Ignore this suggestion</button>
-        <button class="btn btn--primary" id="btn-merge">
-          Merge accounts
-          <span class="material-symbols-rounded">arrow_forward</span>
+        <button class="btn btn--ghost" id="ms-back-btn">
+          <span class="material-symbols-rounded">arrow_back</span>
+          Back
         </button>
+        <div class="ms-detail-footer-right">
+          <button class="btn btn--ghost" id="btn-skip">
+            <span class="material-symbols-rounded">close</span>
+            Ignore this suggestion
+          </button>
+          <button class="btn btn--primary" id="btn-merge">
+            <span class="material-symbols-rounded">check</span>
+            Merge accounts
+          </button>
+        </div>
       </div>
     </div>
 

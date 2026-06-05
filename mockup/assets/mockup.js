@@ -45,16 +45,14 @@
   const totalSeats      = occupiedSeats + 5;
   const totalTrackedPool = all.filter(m => m.status !== 'inactive');
 
-  const seatsVal      = document.getElementById('stat-seats-val');
-  const seatsTotalVal = document.getElementById('stat-seats-total');
-  const activeVal     = document.getElementById('stat-active-val');
-  const totalVal      = document.getElementById('stat-total-val');
-  if (seatsVal)      seatsVal.textContent      = occupiedSeats;
-  if (seatsTotalVal) seatsTotalVal.textContent = totalSeats;
-  if (activeVal)     activeVal.textContent     = trackedPool.length;
-  if (totalVal)      totalVal.textContent      = totalTrackedPool.length;
-  document.querySelector('#card-merge .scard__value').textContent = mergeMembers.length;
-  document.querySelector('#card-grace .scard__value').textContent = graceMembers.length;
+  const viewerMembers = all.filter(m => m.billing === 'viewer');
+  const el = id => document.getElementById(id);
+  if (el('stat-total'))     el('stat-total').textContent     = all.length;
+  if (el('stat-seats-occ')) el('stat-seats-occ').textContent = occupiedSeats;
+  if (el('stat-seats-cap')) el('stat-seats-cap').textContent = totalSeats;
+  if (el('stat-unbilled'))  el('stat-unbilled').textContent  = graceMembers.length;
+  if (el('stat-viewers'))   el('stat-viewers').textContent   = viewerMembers.length;
+  if (el('stat-merge-count')) el('stat-merge-count').textContent = mergeMembers.length;
 
   const tabCount = document.getElementById('tab-members-count');
   if (tabCount) tabCount.textContent = `(${all.length})`;
@@ -182,13 +180,15 @@
 
   function billingCell(m) {
     if (m.billing === 'billed')
-      return `<span class="billing-billed">Billed</span>`;
+      return `<span class="billing-billed">Paid seat</span>`;
+    if (m.billing === 'viewer')
+      return `<span class="billing-viewer">Free seat</span>`;
     if ((m.billing === 'grace' || m.billing === 'unbilled') && m.graceDays)
       return `<div class="billing-grace-cell">
         <span class="billing-grace-days">${m.graceDays} days left</span>
-        <span class="billing-grace">Grace period</span>
+        <span class="billing-grace">Unpaid seat</span>
       </div>`;
-    return `<span class="billing-grace">Grace period</span>`;
+    return `<span class="billing-grace">Unpaid seat</span>`;
   }
 
   function stackedCell(fields, m) {
@@ -231,8 +231,6 @@
 
   const pgState = { page: 1, perPage: 50 };
   let filteredMembers = all;
-  let graceFilterActive = false;
-  let onlineFilterActive = false;
   let searchQuery = '';
   let sortState = { col: null, dir: 'asc' };
   let statusFilter = 'active';
@@ -261,8 +259,6 @@
     let base = all;
     if (statusFilter === 'active')  base = base.filter(m => m.status !== 'removed');
     if (statusFilter === 'removed') base = base.filter(m => m.status === 'removed');
-    if (graceFilterActive)  base = base.filter(m => m.billing !== 'billed');
-    if (onlineFilterActive) base = base.filter(m => m.status === 'active' && m.timeTracking && m.timeTracking.enabled);
     if (searchQuery) {
       base = base.filter(m =>
         m.name.toLowerCase().includes(searchQuery) ||
@@ -276,26 +272,8 @@
   }
 
   function updateFilterBadge() {
-    const count = (graceFilterActive ? 1 : 0) + (onlineFilterActive ? 1 : 0);
     const badge = document.getElementById('filter-badge');
-    badge.textContent = count;
-    badge.hidden = count === 0;
-  }
-
-  function setGraceFilter(active) {
-    graceFilterActive = active;
-    const cta = document.getElementById('grace-card-cta');
-    cta.textContent = active ? 'Clear' : 'Show';
-    updateFilterBadge();
-    applyFilters();
-  }
-
-  function setOnlineFilter(active) {
-    onlineFilterActive = active;
-    const cta = document.getElementById('online-card-cta');
-    cta.textContent = active ? 'Clear' : 'Show';
-    updateFilterBadge();
-    applyFilters();
+    badge.hidden = true;
   }
 
   function paginationFooterHTML(total, page, perPage) {
@@ -375,6 +353,7 @@
     const pageMembers = sorted.slice((page - 1) * perPage, page * perPage);
 
     const COL_CHANGES = {
+      member:      'Fixed column — the Member column is now sticky. It stays visible as you scroll the table horizontally.',
       accountType: 'New column — account type (Standard, Silent, SCIM, SSO) was previously shown as a badge inside the Member column.',
       billing:     'New column — billing status doesn\'t exist on the current Members page.',
     };
@@ -452,9 +431,9 @@
     const wrap = document.createElement('div');
     wrap.className = 'status-filter-pills';
     wrap.innerHTML = `
-      <button class="sfpill sfpill--on" data-sf="active">Active <span class="sfpill__count">${activeCount}</span></button>
-      <button class="sfpill" data-sf="removed">Removed <span class="sfpill__count">${removedCount}</span></button>
-      <button class="sfpill" data-sf="all">All <span class="sfpill__count">${allCount}</span></button>`;
+      <button class="sfpill sfpill--on" data-sf="active">Active <span class="sfpill__count">(${activeCount})</span></button>
+      <button class="sfpill" data-sf="removed">Removed <span class="sfpill__count">(${removedCount})</span></button>
+      <button class="sfpill" data-sf="all">All <span class="sfpill__count">(${allCount})</span></button>`;
 
     document.querySelector('.toolbar-right').prepend(wrap);
 
@@ -468,7 +447,7 @@
     });
   }
 
-  renderPage();
+  applyFilters();
   initStatusPills();
 
   // ── Search ────────────────────────────────────────────────────
@@ -597,8 +576,6 @@
     dstPill.className   = `pill ${dstCls} mm__card-pill`;
     dstPill.textContent = dstLabel;
 
-    document.getElementById('modal-footnote').textContent =
-      `After merging, ${s.source.name} will be removed. All time entries, screenshots, and activity will carry over to ${s.dest.name}.`;
   }
 
   function resolveDetail() {
@@ -613,7 +590,8 @@
 
   function updateMergeBadge() {
     const n = remaining.length;
-    document.querySelector('#card-merge .scard__value').textContent = n;
+    const el = document.getElementById('stat-merge-count');
+    if (el) el.textContent = n;
   }
 
   function showToast(msg) {
@@ -797,9 +775,10 @@
     const mmCancel  = document.getElementById('mm-cancel');
     const mmConfirm = document.getElementById('mm-confirm');
 
-    const mmContentArea = document.getElementById('mm-content-area');
     const mmSrcCard     = document.getElementById('mm-src-card');
     const mmDstCard     = document.getElementById('mm-dst-card');
+    const mmSrcSlot     = document.getElementById('mm-src-slot');
+    const mmDstSlot     = document.getElementById('mm-dst-slot');
     const mmDestSpinner = document.getElementById('mm-dest-spinner');
     const mmDestChevron = document.getElementById('mm-dest-chevron');
 
@@ -891,6 +870,7 @@
       const excludeId = side === 'dest' && srcMember ? srcMember.id : null;
       const q         = query.toLowerCase();
       const members   = all.filter(m => {
+        if (side === 'source' && m.accountType !== 'silent') return false;
         if (excludeId && m.id === excludeId) return false;
         if (!q) return true;
         return m.name.toLowerCase().includes(q) || m.workEmail.toLowerCase().includes(q);
@@ -966,22 +946,23 @@
       const hasSrc  = !!srcMember;
       const hasBoth = !!(srcMember && dstMember);
 
-      // Fade explanation out / cards in — container height stays constant
-      mmContentArea.classList.toggle('mm__content-area--active', hasSrc);
-
       if (hasSrc) {
         fillCard('src', srcMember);
         mmSrcCard.hidden = false;
+        mmSrcSlot.hidden = true;
         mmSrcCard.classList.toggle('mm__card--dim', hasBoth);
       } else {
         mmSrcCard.hidden = true;
+        mmSrcSlot.hidden = false;
       }
 
       if (dstMember) {
         fillCard('dst', dstMember);
         mmDstCard.hidden = false;
+        mmDstSlot.hidden = true;
       } else {
         mmDstCard.hidden = true;
+        mmDstSlot.hidden = false;
       }
 
       mmConfirm.disabled = !hasBoth;
@@ -1020,28 +1001,10 @@
     mmConfirm.addEventListener('click', closeMM);
   })();
 
-  // ── Grace card: filter toggle ─────────────────────────────────
-  document.getElementById('grace-card-cta').addEventListener('click', e => {
-    e.stopPropagation();
-    setGraceFilter(!graceFilterActive);
-  });
-  document.getElementById('card-grace').addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setGraceFilter(!graceFilterActive); }
-  });
-
-  // ── Online card: filter toggle ────────────────────────────────
-  document.getElementById('online-card-cta').addEventListener('click', e => {
-    e.stopPropagation();
-    setOnlineFilter(!onlineFilterActive);
-  });
-  document.getElementById('card-online').addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOnlineFilter(!onlineFilterActive); }
-  });
 
   // ── Silent app org toggle ─────────────────────────────────────
   (function () {
     const cardMerge = document.getElementById('card-merge');
-    const cardGrace = document.getElementById('card-grace');
     const mergeBtn  = document.querySelector('.btn--outline-primary');
 
     // Build and inject toggle into the topbar, right after the timer
@@ -1068,7 +1031,6 @@
       toggle.classList.toggle('is-on', on);
       toggle.setAttribute('aria-checked', String(on));
       cardMerge.hidden = !on;
-      cardGrace.hidden = !on;
       mergeBtn.hidden  = !on;
       const billingCol = window.COLUMN_DEFS.find(c => c.id === 'billing');
       if (billingCol) billingCol.visible = on;
