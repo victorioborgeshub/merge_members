@@ -73,9 +73,9 @@
       limits:       { weeklyHours: wh, dailyHours: dh },
       screenshots:  { frequency: ssf, count: randInt(0,450), active: ssf !== null },
       appsAndUrls:  { tracked: randBool(0.7), count: randInt(0,250) },
-      timeTracking: { enabled: randBool(0.8), weeklyLimit: wh, dailyLimit: dh, approvals: randBool(0.3) },
+      timeTracking: { enabled: role === 'Viewer' ? false : randBool(0.8), weeklyLimit: wh, dailyLimit: dh, approvals: randBool(0.3) },
       dateAdded: da, dateRemoved: null,
-      billing: pick(['billed','billed','billed','billed','unbilled']),
+      billing: role === 'Viewer' ? 'viewer' : pick(['billed','billed','billed','billed','unbilled']),
       graceDays: null, mergeSuggestion: false,
     };
   }
