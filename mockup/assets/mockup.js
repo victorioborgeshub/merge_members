@@ -91,17 +91,15 @@
         initials:    m.initials,
         avatarColor: m.avatarColor,
         accountType: m.accountType,
-        lastSeen:    'Today, 9:43 AM',
-        billing:     'Unbilled seat',
+        computer:    m.computer || null,
       },
       dest: {
         initials:    target.initials,
         avatarColor: target.avatarColor,
         name:        target.name,
         email:       target.workEmail,
-        since:       formatDateSince(target.dateAdded),
-        billing:     'Billed seat',
         accountType: target.accountType,
+        computer:    target.computer || null,
       },
     };
   });
@@ -146,11 +144,13 @@
   }
 
   function paymentCell(p) {
-    if (!p || p.payRate == null) return '<span class="text-muted">—</span>';
+    const payRate   = p?.payRate   != null ? `$${p.payRate}`   : '—';
+    const billRate  = p?.billRate  != null ? `$${p.billRate}`  : '—';
+    const frequency = p?.frequency != null ? p.frequency       : '—';
     return `<div class="stack-cell">
-      <span>Pay rate: $${p.payRate}</span>
-      <span>Bill rate: $${p.billRate}</span>
-      <span>Frequency: ${p.frequency}</span>
+      <span>Pay rate: ${payRate}</span>
+      <span>Bill rate: ${billRate}</span>
+      <span>Frequency: ${frequency}</span>
     </div>`;
   }
 
@@ -210,6 +210,7 @@
       case 'accountType':  return accountTypeCell(m.accountType);
       case 'status':       return statusCell(m.status);
       case 'role':         return `<span class="cell-text">${m.role}</span>`;
+      case 'team':         return `<span class="cell-text">${m.team || '—'}</span>`;
       case 'projects':     return `<span class="text-muted">${m.projects || '—'}</span>`;
       case 'workOrders':   return `<span class="text-muted">${m.workOrders || '—'}</span>`;
       case 'payment':      return paymentCell(m.payment);
@@ -234,6 +235,8 @@
   let searchQuery = '';
   let sortState = { col: null, dir: 'asc' };
   let statusFilter = 'active';
+  let memberFilters = new Set();
+  let teamFilters   = new Set();
 
   function billingSortKey(m) {
     const days = m.graceDays || 0;
@@ -259,6 +262,8 @@
     let base = all;
     if (statusFilter === 'active')  base = base.filter(m => m.status !== 'removed');
     if (statusFilter === 'removed') base = base.filter(m => m.status === 'removed');
+    if (memberFilters.size > 0) base = base.filter(m => memberFilters.has(m.id));
+    if (teamFilters.size > 0)   base = base.filter(m => teamFilters.has(m.team));
     if (searchQuery) {
       base = base.filter(m =>
         m.name.toLowerCase().includes(searchQuery) ||
@@ -356,6 +361,7 @@
       member:      'Fixed column — the Member column is now sticky. It stays visible as you scroll the table horizontally.',
       accountType: 'New column — account type (Standard, Silent, SCIM, SSO) was previously shown as a badge inside the Member column.',
       billing:     'New column — billing status doesn\'t exist on the current Members page.',
+      team:        'New column — shows the team each member belongs to. Used with the Team filter in the page header to scope the table to a specific team.',
     };
 
     document.getElementById('members-thead').innerHTML = `<tr>
@@ -430,6 +436,7 @@
 
     const wrap = document.createElement('div');
     wrap.className = 'status-filter-pills';
+    wrap.dataset.change = 'Redesigned — previously there was a dedicated "Status" column in the table and a status toggle inside the Filters panel. Both have been removed. Status filtering now lives here as quick-select pills in the toolbar.';
     wrap.innerHTML = `
       <button class="sfpill sfpill--on" data-sf="active">Active <span class="sfpill__count">(${activeCount})</span></button>
       <button class="sfpill" data-sf="removed">Removed <span class="sfpill__count">(${removedCount})</span></button>
@@ -456,6 +463,23 @@
     searchQuery = e.target.value.toLowerCase();
     applyFilters();
   });
+
+  function computerMetaHTML(c) {
+    if (!c) return '<span class="mm__card-meta-empty">No computer linked</span>';
+    return `
+      <div class="mm__card-meta-row">
+        <span class="material-symbols-rounded">monitor</span>
+        <span>Linked to: ${c.linkedTo}</span>
+      </div>
+      <div class="mm__card-meta-row">
+        <span class="material-symbols-rounded">badge</span>
+        <span>OS Username: ${c.osUsername}</span>
+      </div>
+      <div class="mm__card-meta-row">
+        <span class="material-symbols-rounded">access_time</span>
+        <span>Last sign in: ${c.lastSignIn}</span>
+      </div>`;
+  }
 
   // ── Merge suggestions modal ───────────────────────────────────
 
@@ -511,41 +535,46 @@
       return;
     }
 
-    list.innerHTML = remaining.map((s, i) => `
-      <div class="ms-row" data-row="${i}">
-        <div class="ms-row__member">
-          <div class="avatar" style="background:${s.source.avatarColor || '#9ca3af'}">${s.source.initials || '?'}</div>
-          <div class="ms-row__info">
-            <span class="ms-row__name">${s.source.name}</span>
-            <span class="ms-row__email">${s.source.email}</span>
-          </div>
-          <span class="pill pill--silent">Silent</span>
-        </div>
-        <div class="ms-row__arrow">
-          <span class="material-symbols-rounded">arrow_forward</span>
-        </div>
-        <div class="ms-row__member">
-          <div class="avatar" style="background:${s.dest.avatarColor}">${s.dest.initials}</div>
-          <div class="ms-row__info">
-            <span class="ms-row__name">${s.dest.name}</span>
-            <span class="ms-row__email">${s.dest.email}</span>
-          </div>
-        </div>
-        <div class="ms-row__actions">
-          <button class="btn btn--ghost btn--sm" data-ignore="${i}">Ignore</button>
-          <button class="btn btn--outline-primary btn--sm" data-review="${i}">Review</button>
-        </div>
-      </div>`).join('');
-
-    list.querySelectorAll('[data-ignore]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        const i = parseInt(btn.dataset.ignore);
-        remaining.splice(i, 1);
-        renderList();
-        updateMergeBadge();
-      });
-    });
+    list.innerHTML = `
+      <table class="ms-table">
+        <thead>
+          <tr>
+            <th>Merge from</th>
+            <th></th>
+            <th>Merge to</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${remaining.map((s, i) => `
+            <tr data-row="${i}">
+              <td>
+                <div class="ms-member-cell">
+                  <div class="avatar" style="background:${s.source.avatarColor || '#9ca3af'}">${s.source.initials || '?'}</div>
+                  <div class="ms-row__info">
+                    <span class="ms-row__name">${s.source.name}</span>
+                    <span class="ms-row__email">${s.source.email}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="ms-arrow-cell">
+                <span class="material-symbols-rounded">arrow_forward</span>
+              </td>
+              <td>
+                <div class="ms-member-cell">
+                  <div class="avatar" style="background:${s.dest.avatarColor}">${s.dest.initials}</div>
+                  <div class="ms-row__info">
+                    <span class="ms-row__name">${s.dest.name}</span>
+                    <span class="ms-row__email">${s.dest.email}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="ms-actions-cell">
+                <button class="btn btn--outline-primary btn--sm" data-review="${i}">Review</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
 
     list.querySelectorAll('[data-review]').forEach(btn => {
       btn.addEventListener('click', e => {
@@ -576,6 +605,11 @@
     dstPill.className   = `pill ${dstCls} mm__card-pill`;
     dstPill.textContent = dstLabel;
 
+    const srcMeta = document.getElementById('ms-src-meta');
+    if (srcMeta) srcMeta.innerHTML = computerMetaHTML(s.source.computer);
+
+    const dstMeta = document.getElementById('ms-dst-meta');
+    if (dstMeta) dstMeta.innerHTML = computerMetaHTML(s.dest.computer);
   }
 
   function resolveDetail() {
@@ -612,13 +646,15 @@
 
   document.getElementById('ms-back-btn').addEventListener('click', showListView);
 
-  document.getElementById('btn-skip').addEventListener('click', () => {
-    resolveDetail();
-  });
-
   document.getElementById('btn-merge').addEventListener('click', () => {
     const s = remaining[detailIndex];
     showToast(`${s.source.name} merged into ${s.dest.name}.`);
+    resolveDetail();
+  });
+
+  document.getElementById('btn-ignore').addEventListener('click', () => {
+    const s = remaining[detailIndex];
+    showToast(`Suggestion for ${s.source.name} ignored.`);
     resolveDetail();
   });
 
@@ -641,6 +677,167 @@
     addMemberPanel.hidden = true;
     addMemberWrap.classList.remove('is-open');
     addMemberBtn.setAttribute('aria-expanded', 'false');
+    memberFilterPanel.hidden = true;
+    memberFilterWrap.classList.remove('is-open');
+    teamFilterPanel.hidden = true;
+    teamFilterWrap.classList.remove('is-open');
+  });
+
+  // ── Header filter dropdowns ───────────────────────────────────
+
+  const memberFilterWrap  = document.getElementById('member-filter-wrap');
+  const memberFilterBtn   = document.getElementById('member-filter-btn');
+  const memberFilterPanel = document.getElementById('member-filter-panel');
+  const teamFilterWrap    = document.getElementById('team-filter-wrap');
+  const teamFilterBtn     = document.getElementById('team-filter-btn');
+  const teamFilterPanel   = document.getElementById('team-filter-panel');
+
+  function checkIco(active) {
+    const color = active ? '#0168dd' : '';
+    return `<span class="material-symbols-rounded pg-filter-check-ico" style="color:${color}">${active ? 'check_box' : 'check_box_outline_blank'}</span>`;
+  }
+
+  function dropdownShell(searchPlaceholder, allSelected, optionsHTML) {
+    return `
+      <div class="pg-filter-search-wrap">
+        <span class="material-symbols-rounded pg-filter-search-ico">search</span>
+        <input class="pg-filter-search-input" type="text" placeholder="${searchPlaceholder}" />
+      </div>
+      <div class="pg-filter-divider"></div>
+      <button class="pg-filter-select-all" data-action="toggle-all">
+        ${checkIco(allSelected)}
+        <span class="pg-filter-select-all-label">${allSelected ? 'Unselect all' : 'Select all'}</span>
+      </button>
+      <div class="pg-filter-divider"></div>
+      ${optionsHTML}`;
+  }
+
+  function populateMemberDropdown() {
+    const items = window.MEMBERS.filter(m => m.status !== 'removed' && !m.mergeIntoId);
+    const allSel = items.length > 0 && items.every(m => memberFilters.has(m.id));
+    const opts = items.map(m => {
+      const sel = memberFilters.has(m.id);
+      return `<button class="pg-filter-option" data-value="${m.id}">${checkIco(sel)}<span>${m.name}</span></button>`;
+    }).join('');
+    memberFilterPanel.innerHTML = dropdownShell('Search members…', allSel, opts);
+  }
+
+  function populateTeamDropdown() {
+    const teams = [...new Set(window.MEMBERS.filter(m => m.status !== 'removed').map(m => m.team).filter(Boolean))].sort();
+    const allSel = teams.length > 0 && teams.every(t => teamFilters.has(t));
+    const opts = teams.map(t => {
+      const sel = teamFilters.has(t);
+      return `<button class="pg-filter-option" data-value="${t}">${checkIco(sel)}<span>${t}</span></button>`;
+    }).join('');
+    teamFilterPanel.innerHTML = dropdownShell('Search teams…', allSel, opts);
+  }
+
+  function filterPanelOptions(panel, query) {
+    panel.querySelectorAll('.pg-filter-option[data-value]').forEach(btn => {
+      btn.style.display = btn.textContent.trim().toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  function updateMemberLabel() {
+    const label = memberFilterBtn.querySelector('.pg-filter-label');
+    if (memberFilters.size === 0) { label.textContent = 'All members'; return; }
+    if (memberFilters.size === 1) {
+      const m = window.MEMBERS.find(x => x.id === [...memberFilters][0]);
+      label.textContent = m ? m.name : '1 member';
+    } else {
+      label.textContent = `${memberFilters.size} members`;
+    }
+  }
+
+  function updateTeamLabel() {
+    const label = teamFilterBtn.querySelector('.pg-filter-label');
+    if (teamFilters.size === 0) { label.textContent = 'All teams'; return; }
+    label.textContent = teamFilters.size === 1 ? [...teamFilters][0] : `${teamFilters.size} teams`;
+  }
+
+  function syncSelectAll(panel, selectedSet, allItems) {
+    const allSel = allItems.length > 0 && allItems.every(v => selectedSet.has(v));
+    const btn = panel.querySelector('[data-action="toggle-all"]');
+    if (!btn) return;
+    btn.querySelector('.pg-filter-check-ico').textContent = allSel ? 'check_box' : 'check_box_outline_blank';
+    btn.querySelector('.pg-filter-check-ico').style.color = allSel ? '#0168dd' : '';
+    btn.querySelector('.pg-filter-select-all-label').textContent = allSel ? 'Unselect all' : 'Select all';
+  }
+
+  memberFilterBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const opening = memberFilterPanel.hidden;
+    if (opening) populateMemberDropdown();
+    memberFilterPanel.hidden = !opening;
+    memberFilterWrap.classList.toggle('is-open', opening);
+  });
+
+  memberFilterPanel.addEventListener('click', e => {
+    e.stopPropagation();
+    const toggleAll = e.target.closest('[data-action="toggle-all"]');
+    if (toggleAll) {
+      const items = window.MEMBERS.filter(m => m.status !== 'removed' && !m.mergeIntoId);
+      const allSel = items.every(m => memberFilters.has(m.id));
+      allSel ? memberFilters.clear() : items.forEach(m => memberFilters.add(m.id));
+      populateMemberDropdown();
+      updateMemberLabel();
+      applyFilters();
+      return;
+    }
+    const opt = e.target.closest('[data-value]');
+    if (!opt) return;
+    const id = parseInt(opt.dataset.value, 10);
+    memberFilters.has(id) ? memberFilters.delete(id) : memberFilters.add(id);
+    const sel = memberFilters.has(id);
+    opt.querySelector('.pg-filter-check-ico').textContent = sel ? 'check_box' : 'check_box_outline_blank';
+    opt.querySelector('.pg-filter-check-ico').style.color = sel ? '#0168dd' : '';
+    const items = window.MEMBERS.filter(m => m.status !== 'removed' && !m.mergeIntoId).map(m => m.id);
+    syncSelectAll(memberFilterPanel, memberFilters, items);
+    updateMemberLabel();
+    applyFilters();
+  });
+
+  memberFilterPanel.addEventListener('input', e => {
+    if (e.target.classList.contains('pg-filter-search-input'))
+      filterPanelOptions(memberFilterPanel, e.target.value);
+  });
+
+  teamFilterBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const opening = teamFilterPanel.hidden;
+    if (opening) populateTeamDropdown();
+    teamFilterPanel.hidden = !opening;
+    teamFilterWrap.classList.toggle('is-open', opening);
+  });
+
+  teamFilterPanel.addEventListener('click', e => {
+    e.stopPropagation();
+    const toggleAll = e.target.closest('[data-action="toggle-all"]');
+    if (toggleAll) {
+      const teams = [...new Set(window.MEMBERS.filter(m => m.status !== 'removed').map(m => m.team).filter(Boolean))];
+      const allSel = teams.every(t => teamFilters.has(t));
+      allSel ? teamFilters.clear() : teams.forEach(t => teamFilters.add(t));
+      populateTeamDropdown();
+      updateTeamLabel();
+      applyFilters();
+      return;
+    }
+    const opt = e.target.closest('[data-value]');
+    if (!opt) return;
+    const val = opt.dataset.value;
+    teamFilters.has(val) ? teamFilters.delete(val) : teamFilters.add(val);
+    const sel = teamFilters.has(val);
+    opt.querySelector('.pg-filter-check-ico').textContent = sel ? 'check_box' : 'check_box_outline_blank';
+    opt.querySelector('.pg-filter-check-ico').style.color = sel ? '#0168dd' : '';
+    const teams = [...new Set(window.MEMBERS.filter(m => m.status !== 'removed').map(m => m.team).filter(Boolean))];
+    syncSelectAll(teamFilterPanel, teamFilters, teams);
+    updateTeamLabel();
+    applyFilters();
+  });
+
+  teamFilterPanel.addEventListener('input', e => {
+    if (e.target.classList.contains('pg-filter-search-input'))
+      filterPanelOptions(teamFilterPanel, e.target.value);
   });
 
   // ── Column picker ─────────────────────────────────────────────
@@ -940,6 +1137,9 @@
       const [cls, label] = ACCOUNT_PILL[member.accountType] || ['pill--silent', member.accountType];
       pillEl.className   = `pill ${cls} mm__card-pill`;
       pillEl.textContent = label;
+
+      const metaEl = document.getElementById(`mm-${prefix}-meta`);
+      if (metaEl) metaEl.innerHTML = computerMetaHTML(member.computer || null);
     }
 
     function updateView() {
