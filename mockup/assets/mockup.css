@@ -68,6 +68,87 @@ button { cursor: pointer; }
   align-items: flex-end;
   gap: 6px;
 }
+.pg-header-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 30px 16px;
+}
+.pg-filter-wrap {
+  position: relative;
+}
+.pg-filter-select {
+  min-width: 160px;
+  justify-content: space-between;
+}
+.pg-filter-panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 5px);
+  min-width: 200px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(17, 25, 40, 0.14);
+  z-index: 400;
+  padding: 6px 0;
+}
+.pg-filter-panel[hidden] { display: none !important; }
+.pg-filter-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 6px;
+}
+.pg-filter-search-ico { font-size: 16px; color: var(--gray-400); flex-shrink: 0; }
+.pg-filter-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--gray-700);
+  background: none;
+}
+.pg-filter-search-input::placeholder { color: var(--gray-400); }
+.pg-filter-divider { height: 1px; background: var(--gray-100); margin: 2px 0; }
+.pg-filter-select-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--gray-700);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 100ms;
+}
+.pg-filter-select-all:hover { background: var(--gray-50); }
+.pg-filter-check-ico { font-size: 20px; flex-shrink: 0; }
+.pg-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--gray-700);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 100ms;
+}
+.pg-filter-option:hover { background: var(--gray-50); }
 
 
 /* ── Page body ────────────────────────────────────────────────── */
@@ -466,7 +547,7 @@ button { cursor: pointer; }
   border-color: #0168dd;
 }
 .sfpill__count {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 /* ── Icon button + tooltip ────────────────────────────────────── */
@@ -564,6 +645,7 @@ button { cursor: pointer; }
   border-right: 1px solid var(--gray-200);
   vertical-align: middle;
   background: var(--white);
+  height: 80px;
 }
 .mtable td:last-child { border-right: 0; }
 .mtable tbody tr:last-child td { border-bottom: none; }
@@ -1549,30 +1631,53 @@ button { cursor: pointer; }
 /* ── Merge suggestions modal ──────────────────────────────────── */
 .modal--ms { max-width: 700px; }
 
+/* ── Merge suggestions table ──────────────────────────────────── */
 .ms-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.ms-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
+.ms-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ms-table thead tr {
+  background: var(--gray-50);
+}
+
+.ms-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-800);
+  white-space: nowrap;
+  border-right: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.ms-table th:last-child { border-right: 0; }
+
+.ms-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+  vertical-align: middle;
   background: var(--white);
-  transition: background 120ms;
 }
 
-.ms-row:hover { background: var(--gray-50); }
+.ms-table td:last-child { border-right: 0; }
+.ms-table tbody tr:last-child td { border-bottom: none; }
+.ms-table tbody tr:hover td { background: var(--gray-50); }
 
-.ms-row__member {
-  flex: 1;
-  min-width: 0;
+.ms-member-cell {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .ms-row__info {
@@ -1600,21 +1705,15 @@ button { cursor: pointer; }
   text-overflow: ellipsis;
 }
 
-.ms-row__arrow {
-  flex-shrink: 0;
-  width: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ms-arrow-cell {
+  width: 40px;
+  text-align: center;
   color: var(--gray-300);
 }
 
-.ms-row__arrow .material-symbols-rounded { font-size: 18px; }
-
-.ms-row__actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
+.ms-actions-cell {
+  text-align: right;
+  white-space: nowrap;
 }
 
 .ms-empty {
@@ -1777,7 +1876,7 @@ button { cursor: pointer; }
   color: var(--gray-400);
 }
 
-.mm__arrow .material-symbols-rounded { font-size: 20px; }
+.mm__arrow .material-symbols-rounded { font-size: 28px; }
 
 /* Shared-height container: explanation stays in flow; cards overlay it */
 .mm__content-area { display: flex; flex-direction: column; }
@@ -1791,6 +1890,22 @@ button { cursor: pointer; }
 .mm__card-col {
   flex: 1;
   min-width: 0;
+  display: grid;
+}
+
+/* Stack slot and card in the same grid cell so toggling never changes the column height */
+.mm__card-col > .mm__slot,
+.mm__card-col > .mm__card {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+/* Keep hidden elements in layout (visibility:hidden) so both contribute to cell height */
+.mm__card-col > .mm__slot[hidden],
+.mm__card-col > .mm__card[hidden] {
+  display: flex !important;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .mm__slots {
@@ -1800,14 +1915,15 @@ button { cursor: pointer; }
   margin-bottom: 0;
 }
 .mm__slot {
-  flex: 1;
   background: var(--gray-50);
   border: 1px dashed var(--gray-300);
   border-radius: 8px;
   padding: 16px 12px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 6px;
 }
 
 .mm__slot-icon {
@@ -1819,6 +1935,8 @@ button { cursor: pointer; }
   color: var(--gray-400);
 }
 
+.mm__slot-icon { text-align: center; }
+
 .mm__slot-label {
   font-size: 14px;
   font-weight: 400;
@@ -1829,10 +1947,17 @@ button { cursor: pointer; }
   color: var(--gray-500);
 }
 
+.mm__slot-sublabel {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gray-400);
+}
+
 .mm__copy-divider {
   height: 1px;
   background: var(--gray-200);
-  margin: 32px 0;
+  margin: 24px 0;
+  flex-shrink: 0;
 }
 
 .mm__expl-title {
@@ -1874,19 +1999,24 @@ button { cursor: pointer; }
 .mm__card-spacer { flex-shrink: 0; width: 56px; }
 
 .mm__card {
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--gray-300);
   border-radius: 8px;
   padding: 12px;
   background: var(--white);
   display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: opacity 150ms;
+}
+
+.mm__card--dim { opacity: 0.6; }
+
+.mm__card-top {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  transition: opacity 150ms;
 }
-.mm__card[hidden] { display: none !important; }
-
-.mm__card--dim { opacity: 0.6; }
 
 .mm__card-inner {
   display: flex;
@@ -1894,6 +2024,39 @@ button { cursor: pointer; }
   gap: 12px;
   flex: 1;
   min-width: 0;
+}
+
+.mm__card-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 12px -12px;
+  flex-shrink: 0;
+}
+
+.mm__card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--gray-600);
+}
+
+.mm__card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mm__card-meta-row .material-symbols-rounded {
+  font-size: 14px;
+  color: var(--gray-600);
+  flex-shrink: 0;
+}
+
+.mm__card-meta-empty {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-style: italic;
 }
 
 .mm__avatar { width: 32px; height: 32px; font-size: 12px; flex-shrink: 0; }
@@ -2038,6 +2201,12 @@ button { cursor: pointer; }
   border-radius: 6px;
   cursor: help;
 }
+.highlight-mode [data-change-open] {
+  outline: 3px solid #FB923C;
+  outline-offset: 3px;
+  border-radius: 6px;
+  cursor: help;
+}
 .highlight-tooltip {
   position: fixed;
   z-index: 2000;
@@ -2050,5 +2219,11 @@ button { cursor: pointer; }
   max-width: 260px;
   pointer-events: none;
   box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+}
+.highlight-tooltip__title {
+  display: block;
+  font-weight: 600;
+  color: #FB923C;
+  margin-bottom: 4px;
 }
 .highlight-tooltip[hidden] { display: none !important; }

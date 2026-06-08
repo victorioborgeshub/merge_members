@@ -50,6 +50,27 @@
         </div>
       </div>
     </div>
+    <!-- ── Filters row ──────────────────────────────────────── -->
+    <div class="pg-header-filters">
+      <div class="pg-filter-wrap" id="member-filter-wrap" data-change-open="New — an &quot;All members&quot; scope selector didn't exist before. We haven't decided if this makes sense yet.">
+        <button class="btn btn--ghost pg-filter-select" id="member-filter-btn">
+          <span class="pg-filter-label">All members</span>
+          <span class="material-symbols-rounded">expand_more</span>
+        </button>
+        <div class="pg-filter-panel" id="member-filter-panel" hidden></div>
+      </div>
+      <div class="pg-filter-wrap" id="team-filter-wrap" data-change-open="New — an &quot;All teams&quot; scope selector didn't exist before. We haven't decided if this makes sense yet.">
+        <button class="btn btn--ghost pg-filter-select" id="team-filter-btn">
+          <span class="pg-filter-label">All teams</span>
+          <span class="material-symbols-rounded">expand_more</span>
+        </button>
+        <div class="pg-filter-panel" id="team-filter-panel" hidden></div>
+      </div>
+      <button class="btn btn--ghost" data-change="Moved — Filters button was previously on the right side of this row. Now sits on the left, next to the scope selectors.">
+        <span class="material-symbols-rounded">filter_list</span>
+        Filters
+      </button>
+    </div>
     <!-- ── Tabs ──────────────────────────────────────────────── -->
     <div class="tab-bar">
       <button class="tab-bar__item tab-bar__item--active">Members <span class="tab-bar__count" id="tab-members-count">(100)</span></button>
@@ -63,7 +84,7 @@
     <!-- ── Summary cards ──────────────────────────────────────── -->
     <div class="summary-row">
 
-      <div class="scard scard--members" id="card-members" data-change="Redesigned — Members Online, Seats Occupied, and Billing Soon consolidated into a single Members card with four segments.">
+      <div class="scard scard--members" id="card-members" data-change-open="Redesigned — Members Online, Seats Occupied, and Billing Soon consolidated into a single card. Icons and copy are still being reviewed — not final.">
         <div class="scard__label">MEMBERS</div>
         <div class="scard__content">
           <div class="scard__segment">
@@ -135,11 +156,6 @@
             <span class="material-symbols-rounded search-box__ico">search</span>
             <input class="search-box__input" type="text" id="search-input" placeholder="Search members…" />
           </div>
-          <button class="btn btn--ghost btn--sm" id="btn-filters" data-change="Moved — previously a button in the page header. Now lives inside the table toolbar, closer to the data it filters.">
-            <span class="material-symbols-rounded">filter_list</span>
-            Filters
-            <span class="filter-badge" id="filter-badge" hidden>1</span>
-          </button>
         </div>
         <div class="toolbar-right">
           <button class="table-icon-btn" aria-label="Export" data-tooltip="Export" data-change="Moved — previously a button in the page header alongside other actions. Now lives inside the table toolbar as an icon button.">
@@ -198,7 +214,7 @@
               <div class="mm-list" id="mm-source-list"></div>
             </div>
           </div>
-          <p class="mm__col-helper">Only Silent App members can be merged.</p>
+          <p class="mm__col-helper">Only Silent accounts can be merged to another account.</p>
         </div>
 
         <div class="mm__grid-spacer" aria-hidden="true"></div>
@@ -232,17 +248,22 @@
           <div class="mm__card-col">
             <div class="mm__slot mm__slot--src" id="mm-src-slot">
               <span class="material-symbols-rounded mm__slot-icon">account_circle</span>
-              <span class="mm__slot-label">Duplicate</span>
+              <span class="mm__slot-label">Duplicate member</span>
+              <span class="mm__slot-sublabel">(to be removed)</span>
             </div>
             <div class="mm__card" id="mm-src-card" hidden>
-              <div class="mm__card-inner">
-                <div class="avatar mm__avatar" id="mm-src-avatar"></div>
-                <div class="mm__card-info">
-                  <span class="mm__card-name" id="mm-src-name"></span>
-                  <span class="mm__card-email" id="mm-src-email"></span>
+              <div class="mm__card-top">
+                <div class="mm__card-inner">
+                  <div class="avatar mm__avatar" id="mm-src-avatar"></div>
+                  <div class="mm__card-info">
+                    <span class="mm__card-name" id="mm-src-name"></span>
+                    <span class="mm__card-email" id="mm-src-email"></span>
+                  </div>
                 </div>
+                <span class="pill mm__card-pill" id="mm-src-pill"></span>
               </div>
-              <span class="pill mm__card-pill" id="mm-src-pill"></span>
+              <div class="mm__card-divider"></div>
+              <div class="mm__card-meta" id="mm-src-meta"></div>
             </div>
           </div>
           <div class="mm__arrow" aria-hidden="true">
@@ -252,16 +273,21 @@
             <div class="mm__slot mm__slot--dst" id="mm-dst-slot">
               <span class="material-symbols-rounded mm__slot-icon">account_circle</span>
               <span class="mm__slot-label">Main profile</span>
+              <span class="mm__slot-sublabel">(kept after merge)</span>
             </div>
             <div class="mm__card" id="mm-dst-card" hidden>
-              <div class="mm__card-inner">
-                <div class="avatar mm__avatar" id="mm-dst-avatar"></div>
-                <div class="mm__card-info">
-                  <span class="mm__card-name" id="mm-dst-name"></span>
-                  <span class="mm__card-email" id="mm-dst-email"></span>
+              <div class="mm__card-top">
+                <div class="mm__card-inner">
+                  <div class="avatar mm__avatar" id="mm-dst-avatar"></div>
+                  <div class="mm__card-info">
+                    <span class="mm__card-name" id="mm-dst-name"></span>
+                    <span class="mm__card-email" id="mm-dst-email"></span>
+                  </div>
                 </div>
+                <span class="pill mm__card-pill" id="mm-dst-pill"></span>
               </div>
-              <span class="pill mm__card-pill" id="mm-dst-pill"></span>
+              <div class="mm__card-divider"></div>
+              <div class="mm__card-meta" id="mm-dst-meta"></div>
             </div>
           </div>
         </div><!-- /.mm__slot-area -->
@@ -327,14 +353,18 @@
       <div class="mm__slot-area">
         <div class="mm__card-col">
           <div class="mm__card">
-            <div class="mm__card-inner">
-              <div class="avatar mm__avatar" id="ms-src-avatar"></div>
-              <div class="mm__card-info">
-                <span class="mm__card-name" id="src-name"></span>
-                <span class="mm__card-email" id="src-email"></span>
+            <div class="mm__card-top">
+              <div class="mm__card-inner">
+                <div class="avatar mm__avatar" id="ms-src-avatar"></div>
+                <div class="mm__card-info">
+                  <span class="mm__card-name" id="src-name"></span>
+                  <span class="mm__card-email" id="src-email"></span>
+                </div>
               </div>
+              <span class="pill mm__card-pill" id="ms-src-pill"></span>
             </div>
-            <span class="pill mm__card-pill" id="ms-src-pill"></span>
+            <div class="mm__card-divider"></div>
+            <div class="mm__card-meta" id="ms-src-meta"></div>
           </div>
         </div>
         <div class="mm__arrow" aria-hidden="true">
@@ -342,14 +372,18 @@
         </div>
         <div class="mm__card-col">
           <div class="mm__card">
-            <div class="mm__card-inner">
-              <div class="avatar mm__avatar" id="dest-avatar"></div>
-              <div class="mm__card-info">
-                <span class="mm__card-name" id="dest-name"></span>
-                <span class="mm__card-email" id="dest-email"></span>
+            <div class="mm__card-top">
+              <div class="mm__card-inner">
+                <div class="avatar mm__avatar" id="dest-avatar"></div>
+                <div class="mm__card-info">
+                  <span class="mm__card-name" id="dest-name"></span>
+                  <span class="mm__card-email" id="dest-email"></span>
+                </div>
               </div>
+              <span class="pill mm__card-pill" id="ms-dst-pill"></span>
             </div>
-            <span class="pill mm__card-pill" id="ms-dst-pill"></span>
+            <div class="mm__card-divider"></div>
+            <div class="mm__card-meta" id="ms-dst-meta"></div>
           </div>
         </div>
       </div>
@@ -375,10 +409,7 @@
           Back
         </button>
         <div class="ms-detail-footer-right">
-          <button class="btn btn--ghost" id="btn-skip">
-            <span class="material-symbols-rounded">close</span>
-            Ignore this suggestion
-          </button>
+          <button class="btn btn--ghost" id="btn-ignore">Ignore suggestion</button>
           <button class="btn btn--primary" id="btn-merge">
             <span class="material-symbols-rounded">check</span>
             Merge accounts
@@ -443,10 +474,14 @@
   // ── Tooltip ─────────────────────────────────────────────────────
   document.addEventListener('mousemove', e => {
     if (!document.body.classList.contains('highlight-mode')) return;
-    const target = e.target.closest('[data-change]');
+    const target = e.target.closest('[data-change], [data-change-open]');
     if (!target) { tooltip.hidden = true; return; }
 
-    tooltip.textContent = target.dataset.change;
+    if (target.dataset.changeOpen !== undefined) {
+      tooltip.innerHTML = `<span class="highlight-tooltip__title">Still figuring this out</span>${target.dataset.changeOpen}`;
+    } else {
+      tooltip.textContent = target.dataset.change;
+    }
     tooltip.hidden = false;
 
     const pad = 14;
