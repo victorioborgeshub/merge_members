@@ -217,14 +217,14 @@ button { cursor: pointer; }
 .add-member-panel {
   position: absolute;
   right: 0;
-  top: calc(100% + 5px);
-  min-width: 190px;
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: 10px;
-  box-shadow: 0 12px 32px rgba(17, 25, 40, 0.14);
+  top: calc(100% + 4px);
+  min-width: 200px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.05);
   z-index: 400;
-  padding: 6px 0;
+  overflow: hidden;
 }
 .add-member-panel[hidden] { display: none !important; }
 
@@ -232,33 +232,45 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
+  padding: 12px 16px;
   width: 100%;
   text-align: left;
   background: none;
   border: none;
+  border-bottom: 1px solid #e5e7eb;
   font-size: 14px;
   font-family: inherit;
-  color: var(--gray-700);
+  color: #111827;
   cursor: pointer;
   white-space: nowrap;
   transition: background 100ms;
 }
-.add-member-item:hover { background: var(--gray-50); }
+.add-member-item:last-child { border-bottom: none; }
+.add-member-item:hover { background: #f9fafb; }
 .add-member-item .material-symbols-rounded { font-size: 16px; color: var(--gray-500); }
 
-/* ── Filter badge (inside Filters button) ────────────────────── */
+/* ── Filter badge (corner notification dot) ──────────────────── */
+#btn-filters {
+  position: relative;
+}
 .filter-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--primary-500);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0 5px;
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 1;
-  padding: 3px 7px;
-  border-radius: 9999px;
-  background: #d4edff;
-  color: #0168dd;
+  justify-content: center;
   white-space: nowrap;
+  pointer-events: none;
 }
 .filter-badge[hidden] { display: none !important; }
 
@@ -294,7 +306,7 @@ button { cursor: pointer; }
   display: flex;
   align-items: stretch;
   gap: 14px;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
   max-width: 1300px;
 }
 .scard {
@@ -357,8 +369,11 @@ button { cursor: pointer; }
   color: var(--white);
   font-size: 12px;
   font-weight: 400;
-  white-space: nowrap;
-  padding: 5px 8px;
+  white-space: pre-line;
+  width: max-content;
+  max-width: 240px;
+  text-align: center;
+  padding: 6px 10px;
   border-radius: 5px;
   pointer-events: none;
   opacity: 0;
@@ -441,15 +456,14 @@ button { cursor: pointer; }
   background: #d4edff;
 }
 
-/* ── Members combined card ────────────────────────────────────── */
-.scard--members {
-  flex: 0 0 auto;
-}
-#card-merge {
-  min-width: 280px;
-}
-#card-merge .scard__action {
-  align-self: flex-end;
+/* ── Stat cards (paid seats / grace period / project viewers) ─── */
+.scard--stat {
+  width: 250px;
+  min-width: 150px;
+  max-width: 350px;
+  height: 100px;
+  gap: 20px;
+  flex-shrink: 0;
 }
 .scard__segment {
   display: flex;
@@ -910,6 +924,37 @@ button { cursor: pointer; }
   flex-direction: column;
   gap: 4px;
   align-items: flex-start;
+  position: relative;
+}
+
+/* ── Billing cell tooltips ────────────────────────────────────── */
+.has-tooltip {
+  position: relative;
+  cursor: default;
+}
+.has-tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  background: var(--gray-900);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: pre-line;
+  width: max-content;
+  max-width: 240px;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.has-tooltip:hover::before {
+  opacity: 1;
 }
 .billing-grace-days {
   font-size: 12px;
@@ -934,6 +979,211 @@ button { cursor: pointer; }
 }
 .mtable tbody tr:hover .row-menu-btn { opacity: 1; }
 .row-menu-btn:hover { background: var(--gray-100); color: var(--gray-700); }
+
+/* ── Cell edit button (pencil, appears on row hover) ─────────── */
+.cell-editable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.cell-editable > *:first-child { flex: 1; min-width: 0; }
+
+.cell-edit-btn {
+  position: relative;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--gray-500);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 120ms, background 120ms;
+}
+.cell-edit-btn .material-symbols-rounded { font-size: 18px; }
+.cell-edit-btn:hover { background: var(--gray-100); }
+.mtable tbody tr:hover .cell-edit-btn { opacity: 1; }
+.cell-edit-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  z-index: 300;
+  background: var(--gray-900);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  padding: 5px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.cell-edit-btn:hover::after { opacity: 1; }
+
+/* ── Table scroll ─────────────────────────────────────────────── */
+/* ── Batch actions bar ───────────────────────────────────────── */
+.batch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0168dd;
+  padding: 0 14px;
+  gap: 12px;
+}
+
+.batch-bar__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  flex-shrink: 0;
+}
+
+.batch-bar__pill {
+  display: inline-flex;
+  align-items: center;
+  background: #d4edff;
+  border-radius: 9999px;
+  height: 22px;
+}
+
+.batch-bar__pill-text {
+  font-size: 12px;
+  color: #0a4b96;
+  line-height: 16px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.batch-bar__pill-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  padding-right: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.batch-bar__pill-dismiss .material-symbols-rounded {
+  font-size: 12px;
+  color: #0168dd;
+}
+
+.batch-bar__select-all {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.batch-bar__select-all:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.batch-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+.batch-bar__action {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  max-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.batch-bar__action:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.batch-bar__more-wrap {
+  position: relative;
+}
+
+.batch-bar__more-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 120ms;
+}
+
+.batch-bar__more-btn.is-open {
+  border-color: #cddbfe;
+}
+
+.batch-bar__more-btn .material-symbols-rounded {
+  font-size: 18px;
+  color: white;
+}
+
+.batch-bar__dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.05);
+  min-width: 200px;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.batch-bar__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.batch-bar__item:last-child {
+  border-bottom: none;
+}
+
+.batch-bar__item:hover {
+  background: #f9fafb;
+}
+
+.batch-bar__item--destructive {
+  color: #c81e1e;
+}
 
 /* ── Table scroll ─────────────────────────────────────────────── */
 .table-scroll {
@@ -1632,6 +1882,14 @@ button { cursor: pointer; }
 .modal--ms { max-width: 760px; }
 
 /* ── Merge suggestions table ──────────────────────────────────── */
+.ms-description {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray-700);
+  line-height: 20px;
+  margin: 0 0 16px;
+}
+
 .ms-list {
   border: 1px solid var(--gray-200);
   border-radius: 8px;
@@ -1915,40 +2173,32 @@ button { cursor: pointer; }
   margin-bottom: 0;
 }
 .mm__slot {
-  background: var(--gray-50);
-  border: 1px dashed var(--gray-300);
+  background: var(--gray-100);
+  border: 2px dashed var(--gray-300);
   border-radius: 8px;
-  padding: 16px 12px;
+  padding: 8px;
+  min-height: 146px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .mm__slot-icon {
-  font-size: 32px;
-  color: var(--gray-300);
+  font-size: 48px;
+  color: var(--gray-500);
+  text-align: center;
 }
-
-.mm__slot--dst .mm__slot-icon {
-  color: var(--gray-400);
-}
-
-.mm__slot-icon { text-align: center; }
 
 .mm__slot-label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
-  color: var(--gray-400);
-}
-
-.mm__slot--dst .mm__slot-label {
   color: var(--gray-500);
 }
 
 .mm__slot-sublabel {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--gray-400);
 }
@@ -2007,6 +2257,8 @@ button { cursor: pointer; }
   flex-direction: column;
   gap: 0;
   transition: opacity 150ms;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .mm__card--dim { opacity: 0.6; }
@@ -2038,6 +2290,7 @@ button { cursor: pointer; }
   flex-direction: column;
   gap: 8px;
   font-size: 12px;
+  min-width: 0;
   color: var(--gray-600);
 }
 
@@ -2045,6 +2298,7 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .mm__card-meta-row .material-symbols-rounded {
@@ -2057,6 +2311,35 @@ button { cursor: pointer; }
   font-size: 12px;
   color: var(--gray-400);
   font-style: italic;
+}
+
+.mm__device-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mm__device-prefix {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.mm__device-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mm__device-more {
+  flex-shrink: 0;
+  position: relative;
+  color: var(--primary-500);
+  white-space: nowrap;
+  cursor: default;
 }
 
 .mm__avatar { width: 32px; height: 32px; font-size: 12px; flex-shrink: 0; }
@@ -2192,6 +2475,187 @@ button { cursor: pointer; }
 @keyframes toast-in {
   from { opacity: 0; transform: translate(-50%, 8px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ── Filters Drawer ───────────────────────────────────────────── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.25);
+  z-index: 800;
+}
+.drawer-overlay[hidden] { display: none !important; }
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  border-left: 1px solid var(--gray-200);
+  box-shadow: 0px 20px 25px -5px rgba(0,0,0,0.10), 0px 10px 10px 0px rgba(0,0,0,0.04);
+  z-index: 850;
+  display: flex;
+  flex-direction: column;
+  animation: drawer-in 200ms ease;
+}
+.drawer[hidden] { display: none !important; }
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+.drawer__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.drawer__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawer__field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.drawer__select-wrap {
+  position: relative;
+}
+.drawer__select-wrap .material-symbols-rounded {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--gray-600);
+  pointer-events: none;
+}
+
+.drawer__select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 40px;
+  padding: 0 36px 0 10px;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--gray-400);
+  background: var(--white);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms;
+}
+.drawer__select:focus { outline: none; border-color: var(--primary-500); }
+
+.drawer__footer {
+  flex-shrink: 0;
+  padding: 16px;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.drawer__footer .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.drawer__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.drawer__section + .drawer__section {
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.drawer__section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.drawer__field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer__field-badge {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+.drawer__date-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  background: var(--white);
+}
+.drawer__date-input .material-symbols-rounded {
+  font-size: 18px;
+  color: var(--gray-400);
+}
+.drawer__date-placeholder {
+  font-size: 14px;
+  color: var(--gray-400);
+}
+
+.drawer__select--static,
+.drawer__select--static:focus {
+  color: var(--gray-300);
+  cursor: default;
+  border-color: var(--gray-200);
+}
+.drawer__select-wrap:has(.drawer__select--static) .material-symbols-rounded {
+  color: var(--gray-300);
+}
+.drawer__date-input--static {
+  cursor: default;
+  border-color: var(--gray-200);
+}
+.drawer__date-input--static .drawer__date-placeholder {
+  color: var(--gray-300);
+}
+.drawer__date-input--static .material-symbols-rounded {
+  color: var(--gray-300);
 }
 
 /* ── Highlight changes mode — remove this block + the <script id="highlight-changes"> to disable ── */

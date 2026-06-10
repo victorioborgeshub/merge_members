@@ -178,17 +178,21 @@
     return `<span class="tt-label ${on ? 'tt-label--on' : 'tt-label--off'}">${on ? 'Enabled' : 'Disabled'}</span>`;
   }
 
+  const BILLING_BILLED_TIP = "Seats you're currently paying for. Open seats fill when members join and clear at the next pay period.";
+  const BILLING_GRACE_TIP  = "Silent App members in a 16-day free window before billing starts.";
+  const BILLING_VIEWER_TIP = "Members with view-only access.\nThey don’t use a paid seat.";
+
   function billingCell(m) {
     if (m.billing === 'billed')
-      return `<span class="billing-billed">Paid seat</span>`;
+      return `<span class="billing-billed has-tooltip" data-tooltip="${BILLING_BILLED_TIP}">Paid seat</span>`;
     if (m.billing === 'viewer')
-      return `<span class="billing-viewer">Free seat</span>`;
+      return `<span class="billing-viewer has-tooltip" data-tooltip="${BILLING_VIEWER_TIP}">Project viewer</span>`;
     if ((m.billing === 'grace' || m.billing === 'unbilled') && m.graceDays)
-      return `<div class="billing-grace-cell">
+      return `<div class="billing-grace-cell has-tooltip" data-tooltip="${BILLING_GRACE_TIP}">
         <span class="billing-grace-days">${m.graceDays} days left</span>
-        <span class="billing-grace">Unpaid seat</span>
+        <span class="billing-grace">Grace period</span>
       </div>`;
-    return `<span class="billing-grace">Unpaid seat</span>`;
+    return `<span class="billing-grace has-tooltip" data-tooltip="${BILLING_GRACE_TIP}">Grace period</span>`;
   }
 
   function stackedCell(fields, m) {
@@ -204,17 +208,30 @@
   function infoCell(m)       { return stackedCell(INFO_FIELDS, m); }
   function employmentCell(m) { return stackedCell(EMPLOYMENT_FIELDS, m); }
 
+  // ── Cell edit buttons (pencil, appears on row hover) ─────────
+  const CELL_EDIT_TOOLTIPS = {
+    role:     'Edit role',
+    payment:  'Edit payment details',
+    projects: 'Edit project assignments',
+    limits:   'Edit time limits',
+  };
+
+  function editBtnHTML(colId) {
+    const tip = CELL_EDIT_TOOLTIPS[colId];
+    return `<button class="cell-edit-btn" data-tooltip="${tip}" aria-label="${tip}"><span class="material-symbols-rounded">edit</span></button>`;
+  }
+
   function renderCell(col, m) {
     switch (col.id) {
       case 'member':       return memberCell(m);
       case 'accountType':  return accountTypeCell(m.accountType);
       case 'status':       return statusCell(m.status);
-      case 'role':         return `<span class="cell-text">${m.role}</span>`;
+      case 'role':         return `<div class="cell-editable"><span class="cell-text">${m.role}</span>${editBtnHTML('role')}</div>`;
       case 'team':         return `<span class="cell-text">${m.team || '—'}</span>`;
-      case 'projects':     return `<span class="text-muted">${m.projects || '—'}</span>`;
+      case 'projects':     return `<div class="cell-editable"><span class="text-muted">${m.projects || '—'}</span>${editBtnHTML('projects')}</div>`;
       case 'workOrders':   return `<span class="text-muted">${m.workOrders || '—'}</span>`;
-      case 'payment':      return paymentCell(m.payment);
-      case 'limits':       return limitsCell(m.limits);
+      case 'payment':      return `<div class="cell-editable">${paymentCell(m.payment)}${editBtnHTML('payment')}</div>`;
+      case 'limits':       return `<div class="cell-editable">${limitsCell(m.limits)}${editBtnHTML('limits')}</div>`;
       case 'screenshots':  return screenshotsCell(m.screenshots);
       case 'appsUrls':     return appsUrlsCell(m.appsAndUrls);
       case 'timeTracking': return timeTrackingCell(m.timeTracking);
@@ -237,6 +254,8 @@
   let statusFilter = 'active';
   let memberFilters = new Set();
   let teamFilters   = new Set();
+  let billingFilter     = '';
+  let accountTypeFilter = '';
 
   function billingSortKey(m) {
     const days = m.graceDays || 0;
@@ -262,6 +281,10 @@
     let base = all;
     if (statusFilter === 'active')  base = base.filter(m => m.status !== 'removed');
     if (statusFilter === 'removed') base = base.filter(m => m.status === 'removed');
+    if (billingFilter === 'paid')         base = base.filter(m => m.billing === 'billed');
+    if (billingFilter === 'grace_period') base = base.filter(m => m.billing === 'grace' || m.billing === 'unbilled' || m.graceDays != null);
+    if (billingFilter === 'viewer')       base = base.filter(m => m.billing === 'viewer');
+    if (accountTypeFilter) base = base.filter(m => m.accountType === accountTypeFilter);
     if (memberFilters.size > 0) base = base.filter(m => memberFilters.has(m.id));
     if (teamFilters.size > 0)   base = base.filter(m => teamFilters.has(m.team));
     if (searchQuery) {
@@ -278,7 +301,13 @@
 
   function updateFilterBadge() {
     const badge = document.getElementById('filter-badge');
-    badge.hidden = true;
+    const count = (billingFilter ? 1 : 0) + (accountTypeFilter ? 1 : 0);
+    if (count > 0) {
+      badge.textContent = count;
+      badge.hidden = false;
+    } else {
+      badge.hidden = true;
+    }
   }
 
   function paginationFooterHTML(total, page, perPage) {
@@ -413,19 +442,70 @@
     renderFooter();
   }
 
+  function updateBatchBar() {
+    const rows = document.querySelectorAll('.row-cb');
+    const n = [...rows].filter(c => c.checked).length;
+    const allCb = document.getElementById('check-all');
+    if (allCb) {
+      allCb.indeterminate = n > 0 && n < rows.length;
+      allCb.checked = n > 0 && n === rows.length;
+    }
+    const bar = document.getElementById('batch-bar');
+    if (!bar) return;
+    if (n > 0) {
+      bar.hidden = false;
+      document.getElementById('batch-count').textContent = `${n} selected`;
+      document.getElementById('batch-total').textContent = filteredMembers.length;
+    } else {
+      bar.hidden = true;
+      const dd = document.getElementById('batch-dropdown');
+      const btn = document.getElementById('batch-more-btn');
+      if (dd) dd.hidden = true;
+      if (btn) btn.classList.remove('is-open');
+    }
+  }
+
   function wireCheckAll() {
     const allCb = document.getElementById('check-all');
     if (!allCb) return;
     allCb.addEventListener('change', () => {
       document.querySelectorAll('.row-cb').forEach(cb => { cb.checked = allCb.checked; });
+      updateBatchBar();
     });
     document.querySelectorAll('.row-cb').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const rows = document.querySelectorAll('.row-cb');
-        const n = [...rows].filter(c => c.checked).length;
-        allCb.indeterminate = n > 0 && n < rows.length;
-        allCb.checked = n === rows.length;
-      });
+      cb.addEventListener('change', updateBatchBar);
+    });
+  }
+
+  function initBatchBar() {
+    document.getElementById('batch-dismiss')?.addEventListener('click', () => {
+      document.querySelectorAll('.row-cb').forEach(cb => { cb.checked = false; });
+      const allCb = document.getElementById('check-all');
+      if (allCb) { allCb.checked = false; allCb.indeterminate = false; }
+      updateBatchBar();
+    });
+
+    document.getElementById('batch-select-all')?.addEventListener('click', () => {
+      document.querySelectorAll('.row-cb').forEach(cb => { cb.checked = true; });
+      const allCb = document.getElementById('check-all');
+      if (allCb) { allCb.checked = true; allCb.indeterminate = false; }
+      updateBatchBar();
+    });
+
+    const moreBtn = document.getElementById('batch-more-btn');
+    const dropdown = document.getElementById('batch-dropdown');
+    moreBtn?.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = !dropdown.hidden;
+      dropdown.hidden = open;
+      moreBtn.classList.toggle('is-open', !open);
+    });
+
+    document.addEventListener('click', e => {
+      if (!document.getElementById('batch-more-wrap')?.contains(e.target)) {
+        if (dropdown) dropdown.hidden = true;
+        moreBtn?.classList.remove('is-open');
+      }
     });
   }
 
@@ -456,6 +536,7 @@
 
   applyFilters();
   initStatusPills();
+  initBatchBar();
 
   // ── Search ────────────────────────────────────────────────────
 
@@ -464,12 +545,31 @@
     applyFilters();
   });
 
+  function renderLinkedTo(devices) {
+    const raw = Array.isArray(devices) ? devices : [devices];
+    const TIP_MAX = 50;
+    const first = raw[0];
+    if (raw.length === 1) {
+      return `<span class="mm__device-row">` +
+        `<span class="mm__device-prefix">Linked to:</span>` +
+        `<span class="mm__device-name" title="${first}">${first}</span>` +
+        `</span>`;
+    }
+    const rest = raw.slice(1);
+    const tipLines = rest.map(d => d.length > TIP_MAX ? d.slice(0, TIP_MAX) + '…' : d).join('\n');
+    return `<span class="mm__device-row">` +
+      `<span class="mm__device-prefix">Linked to:</span>` +
+      `<span class="mm__device-name" title="${first}">${first}</span>` +
+      `<span class="mm__device-more has-tooltip" data-tooltip="${tipLines}">(+${rest.length} more)</span>` +
+      `</span>`;
+  }
+
   function computerMetaHTML(c) {
     if (!c) return '<span class="mm__card-meta-empty">No computer linked</span>';
     return `
       <div class="mm__card-meta-row">
         <span class="material-symbols-rounded">monitor</span>
-        <span>Linked to: ${c.linkedTo}</span>
+        ${renderLinkedTo(c.linkedTo)}
       </div>
       <div class="mm__card-meta-row">
         <span class="material-symbols-rounded">badge</span>
@@ -570,7 +670,7 @@
                 </div>
               </td>
               <td class="ms-actions-cell">
-                <button class="btn btn--outline-primary btn--sm" data-review="${i}">Review</button>
+                <button class="btn btn--primary btn--sm" data-review="${i}">Review</button>
               </td>
             </tr>`).join('')}
         </tbody>
@@ -1202,6 +1302,55 @@
   })();
 
 
+  // ── Billing + Account Type drawer filters ────────────────────
+
+  const BILLING_CARD_MAP = {
+    paid:         'card-paid-seats',
+    grace_period: 'card-grace-period',
+    viewer:       'card-viewers',
+  };
+
+  function syncCardButtons() {
+    Object.entries(BILLING_CARD_MAP).forEach(([value, cardId]) => {
+      const btn = document.querySelector(`#${cardId} .scard__action`);
+      if (!btn) return;
+      btn.textContent = billingFilter === value ? 'Clear' : 'Show';
+    });
+  }
+
+  function syncBillingSelect() {
+    const sel = document.getElementById('drawer-billing-select');
+    if (sel) sel.value = billingFilter;
+  }
+
+  // Card "Show / Clear" buttons
+  Object.entries(BILLING_CARD_MAP).forEach(([value, cardId]) => {
+    const btn = document.querySelector(`#${cardId} .scard__action`);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      billingFilter = billingFilter === value ? '' : value;
+      syncCardButtons();
+      syncBillingSelect();
+      updateFilterBadge();
+      applyFilters();
+    });
+  });
+
+  // Billing Status drawer select
+  document.getElementById('drawer-billing-select')?.addEventListener('change', e => {
+    billingFilter = e.target.value;
+    syncCardButtons();
+    updateFilterBadge();
+    applyFilters();
+  });
+
+  // Account Type drawer select
+  document.getElementById('drawer-account-type-select')?.addEventListener('change', e => {
+    accountTypeFilter = e.target.value;
+    updateFilterBadge();
+    applyFilters();
+  });
+
   // ── Silent app org toggle ─────────────────────────────────────
   (function () {
     const cardMerge = document.getElementById('card-merge');
@@ -1232,8 +1381,6 @@
       toggle.setAttribute('aria-checked', String(on));
       cardMerge.hidden = !on;
       mergeBtn.hidden  = !on;
-      const billingCol = window.COLUMN_DEFS.find(c => c.id === 'billing');
-      if (billingCol) billingCol.visible = on;
       pgState.page = 1;
       renderPage();
     }

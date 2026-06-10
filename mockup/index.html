@@ -36,12 +36,12 @@
               Add member
               <span class="material-symbols-rounded add-member-chevron">expand_more</span>
             </button>
-            <div class="add-member-panel" id="add-member-panel" hidden>
-              <button class="add-member-item">
+            <div class="add-member-panel batch-bar__dropdown" id="add-member-panel" hidden>
+              <button class="add-member-item batch-bar__item">
                 <span class="material-symbols-rounded">person_add</span>
                 Invite members
               </button>
-              <button class="add-member-item">
+              <button class="add-member-item batch-bar__item">
                 <span class="material-symbols-rounded">upload</span>
                 Import members
               </button>
@@ -66,9 +66,10 @@
         </button>
         <div class="pg-filter-panel" id="team-filter-panel" hidden></div>
       </div>
-      <button class="btn btn--ghost" data-change="Moved — Filters button was previously on the right side of this row. Now sits on the left, next to the scope selectors.">
+      <button class="btn btn--ghost" id="btn-filters" data-change="Moved — Filters button was previously on the right side of this row. Now sits on the left, next to the scope selectors.">
         <span class="material-symbols-rounded">filter_list</span>
         Filters
+        <span class="filter-badge" id="filter-badge" hidden></span>
       </button>
     </div>
     <!-- ── Tabs ──────────────────────────────────────────────── -->
@@ -84,67 +85,94 @@
     <!-- ── Summary cards ──────────────────────────────────────── -->
     <div class="summary-row">
 
-      <div class="scard scard--members" id="card-members" data-change-open="Redesigned — Members Online, Seats Occupied, and Billing Soon consolidated into a single card. Icons and copy are still being reviewed — not final.">
-        <div class="scard__label">MEMBERS</div>
+      <!-- Members in Paid Seats -->
+      <div class="scard scard--stat" id="card-paid-seats" data-change="Redesigned — replaces the old combined Members card. Now split into 3 separate cards: Paid Seats, Grace Period, and Project Viewers.">
+        <div class="scard__label">
+          MEMBERS IN PAID SEATS
+          <button class="scard__label-icon" data-tooltip="Seats you're currently paying for.&#10;Open seats fill when members join and clear at the next pay period.">
+            <span class="material-symbols-rounded">info</span>
+          </button>
+        </div>
         <div class="scard__content">
-          <div class="scard__segment">
-            <div class="scard__seg-icon-box">
-              <span class="material-symbols-rounded">group</span>
-            </div>
-            <div class="scard__seg-text">
-              <span class="scard__seg-value" id="stat-total">—</span>
-              <span class="scard__seg-label">Total members</span>
-            </div>
+          <div class="scard__title">
+            <span class="material-symbols-rounded scard__icon-sym">people</span>
+            <span class="scard__value"><span id="stat-seats-occ">—</span>/<span id="stat-seats-cap">—</span></span>
           </div>
-          <div class="scard__seg-divider"></div>
-          <div class="scard__segment">
-            <div class="scard__seg-icon-box">
-              <span class="material-symbols-rounded">receipt</span>
-            </div>
-            <div class="scard__seg-text">
-              <span class="scard__seg-value"><span id="stat-seats-occ">—</span> / <span id="stat-seats-cap">—</span></span>
-              <span class="scard__seg-label">Paid seats</span>
-            </div>
-          </div>
-          <div class="scard__seg-divider"></div>
-          <div class="scard__segment">
-            <div class="scard__seg-icon-box">
-              <span class="material-symbols-rounded">money_off</span>
-            </div>
-            <div class="scard__seg-text">
-              <span class="scard__seg-value" id="stat-unbilled">—</span>
-              <span class="scard__seg-label">Unpaid seats</span>
-            </div>
-          </div>
-          <div class="scard__seg-divider"></div>
-          <div class="scard__segment">
-            <div class="scard__seg-icon-box">
-              <span class="material-symbols-rounded">money_off</span>
-            </div>
-            <div class="scard__seg-text">
-              <span class="scard__seg-value" id="stat-viewers">—</span>
-              <span class="scard__seg-label">Free seats</span>
-            </div>
-          </div>
+          <button class="scard__action">Show</button>
         </div>
       </div>
 
-      <div class="scard" id="card-merge">
-        <div class="scard__label">MERGE SUGGESTIONS</div>
+      <!-- Members in Grace Period -->
+      <div class="scard scard--stat" id="card-grace-period" data-change="New — Silent App members in their 16-day billing window are now surfaced as a dedicated card.">
+        <div class="scard__label">
+          MEMBERS IN GRACE PERIOD
+          <button class="scard__label-icon" data-tooltip="New Silent App members in their 16-day billing window. After that, they become paid seats unless merged or removed.">
+            <span class="material-symbols-rounded">info</span>
+          </button>
+        </div>
         <div class="scard__content">
-          <div class="scard__segment" style="flex: 1">
-            <div class="scard__seg-icon-box">
-              <span class="material-symbols-rounded">merge</span>
-            </div>
-            <div class="scard__seg-text">
-              <span class="scard__seg-value" id="stat-merge-count">3</span>
-              <span class="scard__seg-label">Members</span>
-            </div>
+          <div class="scard__title">
+            <span class="material-symbols-rounded scard__icon-sym">access_time</span>
+            <span class="scard__value" id="stat-unbilled">—</span>
           </div>
-          <span class="scard__action">Review</span>
+          <button class="scard__action">Show</button>
         </div>
       </div>
 
+      <!-- Project Viewers -->
+      <div class="scard scard--stat" id="card-viewers" data-change="New — Project viewers are now surfaced as their own card. They don't count toward the seat limit.">
+        <div class="scard__label">
+          PROJECT VIEWERS
+          <button class="scard__label-icon" data-tooltip="Members with view-only access.&#10;They don't use a paid seat.">
+            <span class="material-symbols-rounded">info</span>
+          </button>
+        </div>
+        <div class="scard__content">
+          <div class="scard__title">
+            <span class="material-symbols-rounded scard__icon-sym">remove_red_eye</span>
+            <span class="scard__value" id="stat-viewers">—</span>
+          </div>
+          <button class="scard__action">Show</button>
+        </div>
+      </div>
+
+      <div class="scard scard--stat" id="card-merge">
+        <div class="scard__label">
+          MERGE SUGGESTIONS
+          <button class="scard__label-icon" data-tooltip="Possible duplicates detected by name or username similarity with Silent App members. Merge within the grace period to avoid extra charges.">
+            <span class="material-symbols-rounded">info</span>
+          </button>
+        </div>
+        <div class="scard__content">
+          <div class="scard__title">
+            <span class="material-symbols-rounded scard__icon-sym">call_merge</span>
+            <span class="scard__value" id="stat-merge-count">3</span>
+          </div>
+          <button class="scard__action">Review</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Inline batch actions (batch mode) ────────────────────── -->
+    <div class="batch-inline-wrap" id="batch-inline-wrap" hidden>
+      <div class="batch-inline-btn-wrap" id="batch-inline-btn-wrap">
+        <button class="btn btn--ghost batch-inline-btn" id="batch-inline-btn" disabled>
+          <span id="batch-inline-label">Batch actions</span>
+          <span class="material-symbols-rounded">expand_more</span>
+        </button>
+        <div class="batch-bar__dropdown" id="batch-inline-dropdown" hidden>
+          <div class="batch-bar__header">Batch edit members</div>
+          <button class="batch-bar__item">Edit pay rate</button>
+          <button class="batch-bar__item">Edit bill rate</button>
+          <button class="batch-bar__item batch-pay-period-item batch-bar__item--disabled">Edit pay period</button>
+          <button class="batch-bar__item">Manage weekly limit</button>
+          <button class="batch-bar__item">Manage daily limit</button>
+          <button class="batch-bar__item">Disable time tracking</button>
+          <button class="batch-bar__item">Enable time tracking</button>
+          <button class="batch-bar__item batch-bar__item--destructive">Remove member</button>
+        </div>
+      </div>
     </div>
 
     <!-- ── Table ──────────────────────────────────────────────── -->
@@ -167,6 +195,36 @@
             </button>
             <div class="col-picker-panel" id="col-picker-panel" hidden></div>
             <div class="cp-flyout" id="cp-flyout" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Batch actions bar ─────────────────────────────────── -->
+      <div class="batch-bar" id="batch-bar" hidden>
+        <div class="batch-bar__left">
+          <span class="batch-bar__pill">
+            <span class="batch-bar__pill-text" id="batch-count">0 selected</span>
+            <button class="batch-bar__pill-dismiss" id="batch-dismiss" aria-label="Clear selection">
+              <span class="material-symbols-rounded">close</span>
+            </button>
+          </span>
+          <button class="batch-bar__select-all" id="batch-select-all">Select all (<span id="batch-total">0</span>)</button>
+        </div>
+        <div class="batch-bar__right">
+          <button class="batch-bar__action">Edit pay rate</button>
+          <button class="batch-bar__action">Edit bill rate</button>
+          <button class="batch-bar__action">Manage weekly limit</button>
+          <div class="batch-bar__more-wrap" id="batch-more-wrap">
+            <button class="batch-bar__more-btn" id="batch-more-btn" aria-label="More actions">
+              <span class="material-symbols-rounded">more_vert</span>
+            </button>
+            <div class="batch-bar__dropdown" id="batch-dropdown" hidden>
+              <button class="batch-bar__item batch-pay-period-item batch-bar__item--disabled">Edit pay period</button>
+              <button class="batch-bar__item">Manage daily limit</button>
+              <button class="batch-bar__item">Disable time tracking</button>
+              <button class="batch-bar__item">Enable time tracking</button>
+              <button class="batch-bar__item batch-bar__item--destructive">Remove member</button>
+            </div>
           </div>
         </div>
       </div>
@@ -247,7 +305,7 @@
         <div class="mm__slot-area">
           <div class="mm__card-col">
             <div class="mm__slot mm__slot--src" id="mm-src-slot">
-              <span class="material-symbols-rounded mm__slot-icon">account_circle</span>
+              <span class="material-symbols-rounded mm__slot-icon">no_accounts</span>
               <span class="mm__slot-label">Duplicate member</span>
               <span class="mm__slot-sublabel">(to be removed)</span>
             </div>
@@ -319,7 +377,10 @@
       <button class="btn btn--link-primary" id="mm-learn-more">Learn more</button>
       <div class="mm__footer-right">
         <button class="btn btn--ghost" id="mm-cancel">Cancel</button>
-        <button class="btn btn--amber" id="mm-confirm" disabled>Merge and delete duplicate</button>
+        <button class="btn btn--amber" id="mm-confirm" disabled>
+          <span class="material-symbols-rounded">check</span>
+          Merge and delete duplicate
+        </button>
       </div>
     </div>
 
@@ -342,6 +403,7 @@
 
     <!-- ── List view ──────────────────────────────────────────── -->
     <div id="ms-list-view">
+      <p class="ms-description">Possible duplicates detected by name or username similarity with Silent App members.<br>Merging within the 16-day grace period avoids extra billing charges.</p>
       <div class="ms-list" id="ms-list"></div>
       <div class="modal__footer ms-list-footer">
         <button class="btn btn--ghost" id="ms-close-btn">Close</button>
@@ -414,16 +476,189 @@
           Back
         </button>
         <div class="ms-detail-footer-right">
-          <button class="btn btn--ghost" id="btn-ignore">Ignore suggestion</button>
-          <button class="btn btn--primary" id="btn-merge">
+          <button class="btn btn--ghost" id="btn-ignore">
+            <span class="material-symbols-rounded">close</span>
+            Ignore suggestion
+          </button>
+          <button class="btn btn--amber" id="btn-merge">
             <span class="material-symbols-rounded">check</span>
-            Merge accounts
+            Merge and delete duplicate
           </button>
         </div>
       </div>
     </div>
 
   </div>
+</div>
+
+<!-- ── Filters drawer ──────────────────────────────────────────── -->
+<div class="drawer-overlay" id="filters-overlay" hidden></div>
+<div class="drawer" id="filters-drawer" hidden role="dialog" aria-labelledby="drawer-title">
+
+  <div class="drawer__header">
+    <span class="drawer__title" id="drawer-title">Filters</span>
+    <button class="modal__close" id="filters-drawer-close" aria-label="Close filters">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </div>
+
+  <div class="drawer__body">
+
+    <!-- Organization -->
+    <div class="drawer__section">
+      <h3 class="drawer__section-title">Organization</h3>
+
+      <!-- Static fields -->
+      <div class="drawer__field">
+        <span class="drawer__field-label">Role</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Projects / Work Orders</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+
+      <!-- Billing Status — interactive -->
+      <div class="drawer__field">
+        <span class="drawer__field-label">Billing Status</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select" id="drawer-billing-select">
+            <option value="">All</option>
+            <option value="paid">Paid seat</option>
+            <option value="grace_period">Grace period</option>
+            <option value="viewer">Project viewer (no seat)</option>
+          </select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+
+      <!-- Account Type — interactive -->
+      <div class="drawer__field">
+        <span class="drawer__field-label">Account Type</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select" id="drawer-account-type-select">
+            <option value="">All</option>
+            <option value="silent">Silent</option>
+            <option value="standard">Standard</option>
+            <option value="scim">SCIM</option>
+            <option value="sso">SSO</option>
+          </select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+
+      <div class="drawer__field">
+        <div class="drawer__field-label-row">
+          <span class="drawer__field-label">Department</span>
+          <span class="drawer__field-badge">HS People Beta</span>
+        </div>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Account Creation</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Apps</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="drawer__section">
+      <h3 class="drawer__section-title">Location</h3>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Work Country / Region</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Work State / Province</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Home Country / Region</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Home State / Province</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employment -->
+    <div class="drawer__section">
+      <h3 class="drawer__section-title">Employment</h3>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Employment Type</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Date Added</span>
+        <div class="drawer__date-input drawer__date-input--static">
+          <span class="drawer__date-placeholder">All time</span>
+          <span class="material-symbols-rounded">calendar_today</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Date Removed</span>
+        <div class="drawer__date-input drawer__date-input--static">
+          <span class="drawer__date-placeholder">All time</span>
+          <span class="material-symbols-rounded">calendar_today</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Time Tracking Status</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+      <div class="drawer__field">
+        <span class="drawer__field-label">Currency</span>
+        <div class="drawer__select-wrap">
+          <select class="drawer__select drawer__select--static" disabled><option>All</option></select>
+          <span class="material-symbols-rounded">keyboard_arrow_down</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="drawer__footer">
+    <button class="btn btn--primary">Apply filters</button>
+    <button class="btn btn--ghost" id="filters-drawer-clear">Clear filters</button>
+  </div>
+
 </div>
 
 <!-- ── Toast ───────────────────────────────────────────────────── -->
@@ -439,6 +674,24 @@
 </script>
 <script src="assets/members-data.js?v=2"></script>
 <script src="assets/mockup.js?v=4"></script>
+
+<!-- ── Filters drawer wiring ────────────────────────────────────── -->
+<script>
+(function () {
+  const drawer   = document.getElementById('filters-drawer');
+  const overlay  = document.getElementById('filters-overlay');
+  const openBtn  = document.getElementById('btn-filters');
+  const closeBtn = document.getElementById('filters-drawer-close');
+
+  function openDrawer()  { drawer.hidden = false; overlay.hidden = false; }
+  function closeDrawer() { drawer.hidden = true;  overlay.hidden = true;  }
+
+  openBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+})();
+</script>
 
 <!-- ── Highlight changes — remove this script + CSS block to disable ────── -->
 <div class="highlight-tooltip" id="highlight-tooltip" hidden></div>
@@ -501,6 +754,176 @@
   });
 
   document.addEventListener('mouseleave', () => { tooltip.hidden = true; });
+})();
+</script>
+
+<!-- ── Batch mode toggle ────────────────────────────────────────── -->
+<script>
+(function () {
+
+  // ── CSS ──────────────────────────────────────────────────────────
+  const style = document.createElement('style');
+  style.textContent = `
+    .batch-inline-wrap {
+      padding: 0 0 20px;
+    }
+    .batch-inline-btn-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .batch-inline-btn[disabled] {
+      opacity: .45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .batch-inline-btn-wrap .batch-bar__dropdown {
+      left: 0;
+      right: auto;
+    }
+    .batch-bar__header {
+      padding: 8px 16px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+    .batch-bar__item--disabled {
+      color: #9ca3af;
+      cursor: default;
+    }
+    .batch-bar__item--disabled:hover { background: transparent; }
+    /* Allow tooltips to escape the dropdown bounds */
+    .batch-bar__dropdown { overflow: visible; }
+    .batch-bar__header { border-radius: 6px 6px 0 0; }
+    .batch-bar__item:last-child { border-radius: 0 0 6px 6px; }
+    /* Tooltip for disabled dropdown items — appears to the right */
+    .batch-bar__dropdown .has-tooltip::before {
+      bottom: auto;
+      top: 50%;
+      transform: translateY(-50%);
+      left: calc(100% + 8px);
+      right: auto;
+      max-width: 200px;
+      text-align: left;
+      white-space: normal;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // ── Toggle element ────────────────────────────────────────────────
+  const batchToggleEl = document.createElement('div');
+  batchToggleEl.className = 'silent-toggle';
+  batchToggleEl.setAttribute('role', 'switch');
+  batchToggleEl.setAttribute('aria-checked', 'false');
+  batchToggleEl.setAttribute('aria-label', 'Batch mode');
+  batchToggleEl.setAttribute('tabindex', '0');
+  batchToggleEl.innerHTML = '<div class="silent-toggle__track"><div class="silent-toggle__thumb"></div></div><span class="silent-toggle__label">Batch mode</span>';
+
+  const topbarLeft = document.querySelector('#hs-topbar .hs-topbar-left');
+  if (topbarLeft) {
+    const divider = document.createElement('div');
+    divider.className = 'hs-topbar-divider';
+    const highlightToggle = topbarLeft.querySelector('[aria-label="Highlight changes"]');
+    if (highlightToggle) {
+      // Reuse the divider Highlight changes already inserted; place batch toggle
+      // before it, then add a fresh divider between batch and highlight.
+      topbarLeft.insertBefore(batchToggleEl, highlightToggle);
+      topbarLeft.insertBefore(divider, highlightToggle);
+    } else {
+      topbarLeft.appendChild(divider);
+      topbarLeft.appendChild(batchToggleEl);
+    }
+  }
+
+  // ── Refs ──────────────────────────────────────────────────────────
+  const inlineWrap  = document.getElementById('batch-inline-wrap');
+  const inlineBtn   = document.getElementById('batch-inline-btn');
+  const inlineLabel = document.getElementById('batch-inline-label');
+  const inlineDD    = document.getElementById('batch-inline-dropdown');
+  const batchBar    = document.getElementById('batch-bar');
+
+  function isOn() { return batchToggleEl.classList.contains('is-on'); }
+
+  function selectedCount() {
+    return [...document.querySelectorAll('.row-cb')].filter(c => c.checked).length;
+  }
+
+  function syncInlineBtn() {
+    const n = selectedCount();
+    inlineBtn.disabled = n === 0;
+    inlineLabel.textContent = n > 0 ? `${n} selected` : 'Batch actions';
+    if (n === 0) inlineDD.hidden = true;
+  }
+
+  function syncPayPeriod() {
+    const n = selectedCount();
+    const tooMany = n > 5;
+    document.querySelectorAll('.batch-pay-period-item').forEach(btn => {
+      btn.classList.toggle('batch-bar__item--disabled', tooMany || n === 0);
+      btn.classList.toggle('has-tooltip', tooMany);
+      if (tooMany) {
+        btn.dataset.tooltip = 'Select 5 or fewer members to bulk edit pay periods';
+      } else {
+        delete btn.dataset.tooltip;
+      }
+    });
+  }
+
+  // ── Mode switch ───────────────────────────────────────────────────
+  function applyBatchMode(on) {
+    batchToggleEl.classList.toggle('is-on', on);
+    batchToggleEl.setAttribute('aria-checked', String(on));
+
+    if (on) {
+      inlineWrap.hidden = false;
+      if (!batchBar.hidden) batchBar.hidden = true; // suppress if currently visible
+      syncInlineBtn();
+      syncPayPeriod();
+    } else {
+      inlineWrap.hidden = true;
+      inlineDD.hidden = true;
+      inlineBtn.disabled = true;
+      // Restore bar if there are active selections
+      if (selectedCount() > 0) batchBar.hidden = false;
+    }
+  }
+
+  batchToggleEl.addEventListener('click', () => applyBatchMode(!isOn()));
+  batchToggleEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); applyBatchMode(!isOn()); }
+  });
+
+  // ── Sync on checkbox changes ──────────────────────────────────────
+  // Runs in bubble phase, after mockup.js's per-element listeners have fired.
+  document.addEventListener('change', e => {
+    if (e.target.id !== 'check-all' && !e.target.classList.contains('row-cb')) return;
+    syncPayPeriod();
+    if (!isOn()) return;
+    if (!batchBar.hidden) batchBar.hidden = true; // keep suppressed
+    syncInlineBtn();
+  });
+
+  // Re-sync when the table re-renders (page change / filter) — checkboxes reset
+  new MutationObserver(() => {
+    syncPayPeriod();
+    if (!isOn()) return;
+    syncInlineBtn();
+  }).observe(document.getElementById('members-tbody'), { childList: true });
+
+  // ── Inline dropdown toggle ────────────────────────────────────────
+  inlineBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (inlineBtn.disabled) return;
+    inlineDD.hidden = !inlineDD.hidden;
+  });
+
+  document.addEventListener('click', e => {
+    if (!document.getElementById('batch-inline-btn-wrap')?.contains(e.target)) {
+      inlineDD.hidden = true;
+    }
+  });
+
 })();
 </script>
 </body>

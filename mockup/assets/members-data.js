@@ -90,7 +90,7 @@
         const siAmPm    = siHour24 >= 12 ? 'PM' : 'AM';
         const siHour12  = siHour24 > 12 ? siHour24 - 12 : siHour24;
         const siMonth   = SIGN_IN_MONTHS[id % 6];
-        return { linkedTo: compName, osUsername: osUser, lastSignIn: `${siMonth} ${siDay}, 2026 at ${siHour12}:${siMin} ${siAmPm}` };
+        return { linkedTo: [compName], osUsername: osUser, lastSignIn: `${siMonth} ${siDay}, 2026 at ${siHour12}:${siMin} ${siAmPm}` };
       })(),
     };
   }
@@ -98,77 +98,77 @@
   // ── Hand-crafted members ──────────────────────────────────────
   const HAND_CRAFTED = [
     {
-      id:1, name:'Sarah Mitchell', initials:'SM', avatarColor:'#0168DD', computer:{ linkedTo:'MacBook-Air-M2', osUsername:'smitchell', lastSignIn:'Jun 5, 2026 at 8:30 AM' },
+      id:1, name:'Sarah Mitchell', initials:'SM', avatarColor:'#0168DD', computer:{ linkedTo:['MacBook-Pro-Engineering-Workstation-2024-M3-Max'], osUsername:'smitchell', lastSignIn:'Jun 5, 2026 at 8:30 AM' },
       info:{ identity:{ employeeId:'EMP-0001', birthday:'1988-03-15', ipAddress:'192.168.1.10' }, workContact:{ email:'sarah.mitchell@hubstaff.com', phone:'+1 415 555 0101', state:'California', country:'US' }, personalContact:{ email:'sarah.m@gmail.com', phone:'+1 415 555 0202', state:'California', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'VP of Engineering', jobType:'Full-time', department:'Engineering' }, hiringDetails:{ employmentType:'Employee', workArrangement:'Remote', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'123-45-6789', taxType:'W-2', accountCode:'ACC-001', currency:'USD' }, timeline:{ startDate:'2020-01-15', endDate:null, terminationReason:null, comment:null } },
       workEmail:'sarah.mitchell@hubstaff.com', status:'active', role:'Admin', team:'Engineering', accountType:'standard',
       projects:8, workOrders:0, payment:{ payRate:95, billRate:150, frequency:'Salary' }, limits:{ weeklyHours:40, dailyHours:8 }, screenshots:{ frequency:'Every 10 min', count:342, active:true }, appsAndUrls:{ tracked:true, count:87 }, timeTracking:{ enabled:true, weeklyLimit:40, dailyLimit:8, approvals:true }, dateAdded:'2020-01-15', dateRemoved:null, billing:'billed', graceDays:null, mergeSuggestion:false,
     },
     {
-      id:2, name:'James Rodriguez', initials:'JR', avatarColor:'#7C3AED', computer:{ linkedTo:'ThinkPad-X1-Carbon', osUsername:'jrodriguez', lastSignIn:'Jun 5, 2026 at 9:05 AM' },
+      id:2, name:'James Rodriguez', initials:'JR', avatarColor:'#7C3AED', computer:{ linkedTo:['ThinkPad-X1-Carbon'], osUsername:'jrodriguez', lastSignIn:'Jun 5, 2026 at 9:05 AM' },
       info:{ identity:{ employeeId:'EMP-0002', birthday:'1990-07-22', ipAddress:'192.168.1.11' }, workContact:{ email:'james.rodriguez@hubstaff.com', phone:'+1 512 555 0103', state:'Texas', country:'US' }, personalContact:{ email:'jrodriguez@gmail.com', phone:'+1 512 555 0104', state:'Texas', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'Engineering Manager', jobType:'Full-time', department:'Engineering' }, hiringDetails:{ employmentType:'Employee', workArrangement:'Hybrid', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'234-56-7890', taxType:'W-2', accountCode:'ACC-002', currency:'USD' }, timeline:{ startDate:'2022-11-01', endDate:null, terminationReason:null, comment:null } },
       workEmail:'james.rodriguez@hubstaff.com', status:'active', role:'Manager', team:'Engineering', accountType:'standard',
       projects:5, workOrders:0, payment:{ payRate:75, billRate:120, frequency:'Salary' }, limits:{ weeklyHours:40, dailyHours:8 }, screenshots:{ frequency:'Every 5 min', count:198, active:true }, appsAndUrls:{ tracked:true, count:64 }, timeTracking:{ enabled:true, weeklyLimit:40, dailyLimit:8, approvals:false }, dateAdded:'2022-11-01', dateRemoved:null, billing:'billed', graceDays:null, mergeSuggestion:false,
     },
     {
-      id:3, name:'Emily Chen', initials:'EC', avatarColor:'#059669', computer:{ linkedTo:'MacBook-Pro-16', osUsername:'echen', lastSignIn:'Jun 5, 2026 at 7:45 AM' },
+      id:3, name:'Emily Chen', initials:'EC', avatarColor:'#059669', computer:{ linkedTo:['MacBook-Pro-16'], osUsername:'echen', lastSignIn:'Jun 5, 2026 at 7:45 AM' },
       info:{ identity:{ employeeId:'EMP-0003', birthday:'1993-02-10', ipAddress:'192.168.1.12' }, workContact:{ email:'emily.chen@hubstaff.com', phone:'+1 206 555 0105', state:'Washington', country:'US' }, personalContact:{ email:'emilyc@gmail.com', phone:'+1 206 555 0106', state:'Washington', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'Product Designer', jobType:'Full-time', department:'Design' }, hiringDetails:{ employmentType:'Employee', workArrangement:'Remote', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'345-67-8901', taxType:'W-2', accountCode:'ACC-003', currency:'USD' }, timeline:{ startDate:'2024-01-08', endDate:null, terminationReason:null, comment:null } },
       workEmail:'emily.chen@hubstaff.com', status:'active', role:'Member', team:'Design', accountType:'standard',
       projects:3, workOrders:0, payment:{ payRate:60, billRate:95, frequency:'Hourly' }, limits:{ weeklyHours:40, dailyHours:8 }, screenshots:{ frequency:'Every 10 min', count:156, active:true }, appsAndUrls:{ tracked:true, count:43 }, timeTracking:{ enabled:true, weeklyLimit:40, dailyLimit:8, approvals:false }, dateAdded:'2024-01-08', dateRemoved:null, billing:'billed', graceDays:null, mergeSuggestion:false,
     },
     {
-      id:4, name:'DavidKim@', initials:'DK', avatarColor:'#D97706', computer:{ linkedTo:'Windows-PC-Eng', osUsername:'dkim', lastSignIn:'Jun 4, 2026 at 4:30 PM' },
+      id:4, name:'DavidKim@', initials:'DK', avatarColor:'#D97706', computer:{ linkedTo:['Windows-PC-Eng', 'MacBook-Air-M2', 'Ubuntu-Workstation-Dev-Box-2024'], osUsername:'dkim', lastSignIn:'Jun 4, 2026 at 4:30 PM' },
       info:{ identity:{ employeeId:'EMP-0004', birthday:'1991-11-30', ipAddress:'192.168.1.13' }, workContact:{ email:'david.kim@hubstaff.corp', phone:'+1 213 555 0107', state:'California', country:'US' }, personalContact:{ email:'dkim91@gmail.com', phone:'+1 213 555 0108', state:'California', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'Backend Engineer', jobType:'Full-time', department:'Engineering' }, hiringDetails:{ employmentType:'Employee', workArrangement:'In-office', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'456-78-9012', taxType:'W-2', accountCode:'ACC-004', currency:'USD' }, timeline:{ startDate:'2023-03-20', endDate:null, terminationReason:null, comment:null } },
       workEmail:'david.kim@hubstaff.corp', status:'active', role:'Member', team:'Engineering', accountType:'silent',
       projects:4, workOrders:0, payment:{ payRate:65, billRate:100, frequency:'Hourly' }, limits:{ weeklyHours:40, dailyHours:9 }, screenshots:{ frequency:'Every 5 min', count:289, active:true }, appsAndUrls:{ tracked:true, count:72 }, timeTracking:{ enabled:true, weeklyLimit:40, dailyLimit:9, approvals:false }, dateAdded:'2023-03-20', dateRemoved:null, billing:'unbilled', graceDays:10, mergeSuggestion:false,
     },
     {
-      id:5, name:'AmandaFoster@', initials:'AF', avatarColor:'#DC2626', computer:{ linkedTo:'Surface-Pro-9', osUsername:'afoster', lastSignIn:'Jun 2, 2026 at 1:45 PM' },
+      id:5, name:'AmandaFoster@', initials:'AF', avatarColor:'#DC2626', computer:{ linkedTo:['Surface-Pro-9'], osUsername:'afoster', lastSignIn:'Jun 2, 2026 at 1:45 PM' },
       info:{ identity:{ employeeId:'EMP-0005', birthday:'1995-06-14', ipAddress:'192.168.1.14' }, workContact:{ email:'amanda.foster@hubstaff.corp', phone:'+1 312 555 0109', state:'Illinois', country:'US' }, personalContact:{ email:'afoster@gmail.com', phone:'+1 312 555 0110', state:'Illinois', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'Marketing Specialist', jobType:'Full-time', department:'Marketing' }, hiringDetails:{ employmentType:'Employee', workArrangement:'Hybrid', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'567-89-0123', taxType:'W-2', accountCode:'ACC-005', currency:'USD' }, timeline:{ startDate:'2021-07-12', endDate:null, terminationReason:null, comment:null } },
       workEmail:'amanda.foster@hubstaff.corp', status:'active', role:'Member', team:'Marketing', accountType:'standard',
       projects:6, workOrders:0, payment:{ payRate:45, billRate:70, frequency:'Bi-weekly' }, limits:{ weeklyHours:40, dailyHours:8 }, screenshots:{ frequency:'Every 15 min', count:112, active:true }, appsAndUrls:{ tracked:true, count:38 }, timeTracking:{ enabled:true, weeklyLimit:40, dailyLimit:8, approvals:false }, dateAdded:'2021-07-12', dateRemoved:null, billing:'billed', graceDays:null, mergeSuggestion:false,
     },
     {
-      id:11, name:'SarahMitchell@', initials:'SM', avatarColor:'#0168DD', computer:{ linkedTo:'MacBook-Pro-Corp', osUsername:'sarah.mitchell', lastSignIn:'Jun 1, 2026 at 9:43 AM' },
+      id:11, name:'SarahMitchell@', initials:'SM', avatarColor:'#0168DD', computer:{ linkedTo:['MacBook-Pro-Corp'], osUsername:'sarah.mitchell', lastSignIn:'Jun 1, 2026 at 9:43 AM' },
       info:{ identity:{ employeeId:'EMP-0011', birthday:null, ipAddress:'192.168.1.110' }, workContact:{ email:'sarah.mitchell@hubstaff.corp', phone:null, state:null, country:null }, personalContact:{ email:null, phone:null, state:null, country:null } },
       employment:{ jobDetails:{ jobTitle:null, jobType:null, department:null }, hiringDetails:{ employmentType:null, workArrangement:null, employedThrough:null, vendorName:null }, accounting:{ taxId:null, taxType:null, accountCode:null, currency:null }, timeline:{ startDate:null, endDate:null, terminationReason:null, comment:null } },
       workEmail:'sarah.mitchell@hubstaff.corp', status:'active', role:'Member', team:'Engineering', accountType:'silent',
       projects:0, workOrders:0, payment:{ payRate:null, billRate:null, frequency:null }, limits:{ weeklyHours:null, dailyHours:null }, screenshots:{ frequency:null, count:0, active:false }, appsAndUrls:{ tracked:false, count:0 }, timeTracking:{ enabled:false, weeklyLimit:null, dailyLimit:null, approvals:false }, dateAdded:'2026-06-01', dateRemoved:null, billing:'unbilled', graceDays:10, mergeSuggestion:true, mergeIntoId:1,
     },
     {
-      id:12, name:'JamesRodriguez@', initials:'JR', avatarColor:'#7C3AED', computer:{ linkedTo:'Windows-PC-Corp', osUsername:'james.r', lastSignIn:'Jun 1, 2026 at 10:12 AM' },
+      id:12, name:'JamesRodriguez@', initials:'JR', avatarColor:'#7C3AED', computer:{ linkedTo:['Windows-PC-Corp'], osUsername:'james.r', lastSignIn:'Jun 1, 2026 at 10:12 AM' },
       info:{ identity:{ employeeId:'EMP-0012', birthday:null, ipAddress:'192.168.1.111' }, workContact:{ email:'james.rodriguez@hubstaff.corp', phone:null, state:null, country:null }, personalContact:{ email:null, phone:null, state:null, country:null } },
       employment:{ jobDetails:{ jobTitle:null, jobType:null, department:null }, hiringDetails:{ employmentType:null, workArrangement:null, employedThrough:null, vendorName:null }, accounting:{ taxId:null, taxType:null, accountCode:null, currency:null }, timeline:{ startDate:null, endDate:null, terminationReason:null, comment:null } },
       workEmail:'james.rodriguez@hubstaff.corp', status:'active', role:'Member', team:'Engineering', accountType:'silent',
       projects:0, workOrders:0, payment:{ payRate:null, billRate:null, frequency:null }, limits:{ weeklyHours:null, dailyHours:null }, screenshots:{ frequency:null, count:0, active:false }, appsAndUrls:{ tracked:false, count:0 }, timeTracking:{ enabled:false, weeklyLimit:null, dailyLimit:null, approvals:false }, dateAdded:'2026-06-01', dateRemoved:null, billing:'unbilled', graceDays:10, mergeSuggestion:true, mergeIntoId:2,
     },
     {
-      id:13, name:'EmilyChen@', initials:'EC', avatarColor:'#059669', computer:{ linkedTo:'iMac-Design-Corp', osUsername:'emily.chen', lastSignIn:'Jun 1, 2026 at 11:20 AM' },
+      id:13, name:'EmilyChen@', initials:'EC', avatarColor:'#059669', computer:{ linkedTo:['iMac-Design-Corp'], osUsername:'emily.chen', lastSignIn:'Jun 1, 2026 at 11:20 AM' },
       info:{ identity:{ employeeId:'EMP-0013', birthday:null, ipAddress:'192.168.1.112' }, workContact:{ email:'emily.chen@hubstaff.corp', phone:null, state:null, country:null }, personalContact:{ email:null, phone:null, state:null, country:null } },
       employment:{ jobDetails:{ jobTitle:null, jobType:null, department:null }, hiringDetails:{ employmentType:null, workArrangement:null, employedThrough:null, vendorName:null }, accounting:{ taxId:null, taxType:null, accountCode:null, currency:null }, timeline:{ startDate:null, endDate:null, terminationReason:null, comment:null } },
       workEmail:'emily.chen@hubstaff.corp', status:'active', role:'Member', team:'Design', accountType:'silent',
       projects:0, workOrders:0, payment:{ payRate:null, billRate:null, frequency:null }, limits:{ weeklyHours:null, dailyHours:null }, screenshots:{ frequency:null, count:0, active:false }, appsAndUrls:{ tracked:false, count:0 }, timeTracking:{ enabled:false, weeklyLimit:null, dailyLimit:null, approvals:false }, dateAdded:'2026-06-01', dateRemoved:null, billing:'unbilled', graceDays:10, mergeSuggestion:true, mergeIntoId:3,
     },
     {
-      id:6, name:'Lisa Johnson', initials:'LJ', avatarColor:'#6B7280', computer:{ linkedTo:'MacBook-Air-M1', osUsername:'ljohnson', lastSignIn:'May 28, 2026 at 11:00 AM' },
+      id:6, name:'Lisa Johnson', initials:'LJ', avatarColor:'#6B7280', computer:{ linkedTo:['MacBook-Air-M1'], osUsername:'ljohnson', lastSignIn:'May 28, 2026 at 11:00 AM' },
       info:{ identity:{ employeeId:'EMP-0006', birthday:'1987-09-25', ipAddress:'192.168.1.15' }, workContact:{ email:'lisa.johnson@company.com', phone:'+1 617 555 0111', state:'New York', country:'US' }, personalContact:{ email:'ljohnson@gmail.com', phone:'+1 617 555 0112', state:'New York', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'Senior Designer', jobType:'Full-time', department:'Design' }, hiringDetails:{ employmentType:'Employee', workArrangement:'Remote', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'678-90-1234', taxType:'W-2', accountCode:'ACC-006', currency:'USD' }, timeline:{ startDate:'2019-04-03', endDate:null, terminationReason:null, comment:null } },
       workEmail:'lisa.johnson@company.com', status:'inactive', role:'Member', team:'Design', accountType:'standard',
       projects:2, workOrders:0, payment:{ payRate:55, billRate:85, frequency:'Monthly' }, limits:{ weeklyHours:30, dailyHours:6 }, screenshots:{ frequency:null, count:0, active:false }, appsAndUrls:{ tracked:false, count:0 }, timeTracking:{ enabled:false, weeklyLimit:30, dailyLimit:6, approvals:false }, dateAdded:'2019-04-03', dateRemoved:null, billing:'billed', graceDays:null, mergeSuggestion:false,
     },
     {
-      id:7, name:'Michael Torres', initials:'MT', avatarColor:'#0891B2', computer:{ linkedTo:'Ubuntu-Workstation', osUsername:'mtorres', lastSignIn:'Jun 4, 2026 at 3:45 PM' },
+      id:7, name:'Michael Torres', initials:'MT', avatarColor:'#0891B2', computer:{ linkedTo:['Ubuntu-Workstation'], osUsername:'mtorres', lastSignIn:'Jun 4, 2026 at 3:45 PM' },
       info:{ identity:{ employeeId:'EMP-0007', birthday:'1992-12-08', ipAddress:'192.168.1.16' }, workContact:{ email:'michael.torres@company.com', phone:'+1 303 555 0113', state:'Colorado', country:'US' }, personalContact:{ email:'mtorres@gmail.com', phone:'+1 303 555 0114', state:'Colorado', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'DevOps Engineer', jobType:'Full-time', department:'Engineering' }, hiringDetails:{ employmentType:'Employee', workArrangement:'Remote', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'789-01-2345', taxType:'W-2', accountCode:'ACC-007', currency:'USD' }, timeline:{ startDate:'2023-09-15', endDate:null, terminationReason:null, comment:null } },
       workEmail:'michael.torres@company.com', status:'grace', role:'Member', team:'Engineering', accountType:'silent',
       projects:3, workOrders:0, payment:{ payRate:70, billRate:110, frequency:'Hourly' }, limits:{ weeklyHours:40, dailyHours:8 }, screenshots:{ frequency:'Every 5 min', count:87, active:true }, appsAndUrls:{ tracked:true, count:51 }, timeTracking:{ enabled:true, weeklyLimit:40, dailyLimit:8, approvals:false }, dateAdded:'2023-09-15', dateRemoved:null, billing:'grace', graceDays:14, mergeSuggestion:false,
     },
     {
-      id:8, name:'Robert Smith', initials:'RS', avatarColor:'#7C3AED', computer:{ linkedTo:'ThinkPad-T14', osUsername:'rsmith', lastSignIn:'Jun 2, 2026 at 9:30 AM' },
+      id:8, name:'Robert Smith', initials:'RS', avatarColor:'#7C3AED', computer:{ linkedTo:['ThinkPad-T14'], osUsername:'rsmith', lastSignIn:'Jun 2, 2026 at 9:30 AM' },
       info:{ identity:{ employeeId:'EMP-0008', birthday:'1985-04-17', ipAddress:'192.168.1.17' }, workContact:{ email:'robert.smith@company.com', phone:'+1 404 555 0115', state:'Georgia', country:'US' }, personalContact:{ email:'rsmith@gmail.com', phone:'+1 404 555 0116', state:'Georgia', country:'US' } },
       employment:{ jobDetails:{ jobTitle:'Data Analyst', jobType:'Full-time', department:'Data' }, hiringDetails:{ employmentType:'Employee', workArrangement:'In-office', employedThrough:'Direct', vendorName:null }, accounting:{ taxId:'890-12-3456', taxType:'W-2', accountCode:'ACC-008', currency:'USD' }, timeline:{ startDate:'2022-06-01', endDate:null, terminationReason:null, comment:null } },
       workEmail:'robert.smith@company.com', status:'grace', role:'Member', team:'Data', accountType:'silent',
@@ -254,7 +254,7 @@
     { id:'workOrders',   label:'Work Orders',   key:'workOrders',   visible:true  },
     { id:'payment',      label:'Payment',       key:'payment',      visible:true  },
     { id:'limits',       label:'Limits',        key:'limits',       visible:true  },
-    { id:'billing',      label:'Billing',       key:'billing',      visible:false },
+    { id:'billing',      label:'Billing',       key:'billing',      visible:true  },
     { id:'accountType',  label:'Account type',  key:'accountType',  visible:true  },
     { id:'timeTracking', label:'Time tracking', key:'timeTracking', visible:true  },
     { id:'screenshots',  label:'Screenshots',   key:'screenshots',  visible:true },
