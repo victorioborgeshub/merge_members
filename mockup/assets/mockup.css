@@ -567,7 +567,7 @@ button { cursor: pointer; }
 /* ── Icon button + tooltip ────────────────────────────────────── */
 .table-icon-btn {
   position: relative;
-  width: 34px; height: 34px;
+  width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
   background: var(--white);
   border: 1px solid var(--gray-300);
@@ -580,14 +580,19 @@ button { cursor: pointer; }
 .table-icon-btn .material-symbols-rounded { font-size: 18px; }
 .table-icon-btn--labeled {
   width: auto;
-  height: auto;
-  padding: 7px 10px;
-  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  gap: 8px;
   font-size: 14px;
   font-weight: 400;
   font-family: inherit;
   white-space: nowrap;
+  border-color: var(--gray-300);
+  color: #4b5563;
 }
+.table-icon-btn--labeled:hover { border-color: var(--gray-400); color: #374151; }
+.table-icon-btn--labeled::after,
+.table-icon-btn--labeled:hover::after { display: none; }
 
 .table-icon-btn::after {
   content: attr(data-tooltip);
