@@ -23,11 +23,11 @@
       </div>
       <div class="pg-actions-wrap">
         <div class="pg-actions">
-          <button class="btn btn--ghost" data-change="Different design — uses a ghost button style (bordered, no fill) instead of a plain text link.">
+          <button class="btn btn--ghost" data-change="Redesigned — Now uses a ghost button with a checklist icon. Moved from the top-right corner to the main action row for more visibility.">
             <span class="material-symbols-rounded">checklist</span>
             Onboarding status
           </button>
-          <button class="btn btn--outline-primary" data-change="New — opens a modal to manually merge any two members into one profile.">
+          <button class="btn btn--outline-primary" data-change-open="Opens a modal to manually merge any two members into one profile.">
             <span class="material-symbols-rounded">merge</span>
             Merge member
           </button>
@@ -53,21 +53,21 @@
     </div>
     <!-- ── Filters row ──────────────────────────────────────── -->
     <div class="pg-header-filters">
-      <div class="pg-filter-wrap" id="member-filter-wrap" data-change-open="New — an &quot;All members&quot; scope selector didn't exist before. We haven't decided if this makes sense yet.">
+      <div class="pg-filter-wrap" id="member-filter-wrap" data-change-open="Scope selector for filtering the table to specific members.">
         <button class="btn btn--ghost pg-filter-select" id="member-filter-btn">
           <span class="pg-filter-label">All members</span>
           <span class="material-symbols-rounded">expand_more</span>
         </button>
         <div class="pg-filter-panel" id="member-filter-panel" hidden></div>
       </div>
-      <div class="pg-filter-wrap" id="team-filter-wrap" data-change-open="New — an &quot;All teams&quot; scope selector didn't exist before. We haven't decided if this makes sense yet.">
+      <div class="pg-filter-wrap" id="team-filter-wrap" data-change-open="Scope selector for filtering the table to a specific team.">
         <button class="btn btn--ghost pg-filter-select" id="team-filter-btn">
           <span class="pg-filter-label">All teams</span>
           <span class="material-symbols-rounded">expand_more</span>
         </button>
         <div class="pg-filter-panel" id="team-filter-panel" hidden></div>
       </div>
-      <button class="btn btn--ghost" id="btn-filters" data-change="Moved — Filters button was previously on the right side of this row. Now sits on the left, next to the scope selectors.">
+      <button class="btn btn--ghost" id="btn-filters" data-change="Moved — Filters button was previously on the right side of this row. It now sits on the left, next to the scope selectors.">
         <span class="material-symbols-rounded">filter_list</span>
         Filters
         <span class="filter-badge" id="filter-badge" hidden></span>
@@ -77,7 +77,7 @@
     <div class="tab-bar">
       <button class="tab-bar__item tab-bar__item--active">Members <span class="tab-bar__count" id="tab-members-count">(100)</span></button>
       <button class="tab-bar__item">Invites <span class="tab-bar__count">(0)</span></button>
-      <button class="tab-bar__item">Invite Links <span class="tab-bar__count">(0)</span></button>
+      <button class="tab-bar__item" data-change-wip="Invite Links tab is being built by the team and will be mirrored here once live.">Invite Links <span class="tab-bar__count">(0)</span></button>
     </div>
   </div>
 
@@ -88,7 +88,7 @@
     <div class="summary-row">
 
       <!-- Members in Paid Seats -->
-      <div class="scard scard--stat" id="card-paid-seats" data-change="Redesigned — replaces the old combined Members card. Now split into 3 separate cards: Paid Seats, Grace Period, and Project Viewers.">
+      <div class="scard scard--stat" id="card-paid-seats" data-change="Redesigned — Replaces the old combined Members card. Now split into 3 separate cards: Paid Seats, Grace Period, and View-only Seats.">
         <div class="scard__label">
           MEMBERS IN PAID SEATS
           <button class="scard__label-icon" data-tooltip="Seats you're currently paying for.&#10;&#10;Open seats fill when members join and clear at the next pay period.">
@@ -105,7 +105,7 @@
       </div>
 
       <!-- Members in Grace Period -->
-      <div class="scard scard--stat" id="card-grace-period">
+      <div class="scard scard--stat" id="card-grace-period" data-change-open="Members in their billing window are now surfaced as a dedicated card.">
         <div class="scard__label">
           MEMBERS IN GRACE PERIOD
           <button class="scard__label-icon" data-tooltip="Members in their 16-day billing window.&#10;&#10;After that, they become paid seats unless merged or removed.">
@@ -122,7 +122,7 @@
       </div>
 
       <!-- Project Viewers -->
-      <div class="scard scard--stat" id="card-viewers" data-change="New — View-only seats are now surfaced as their own card. They don't count toward the seat limit.">
+      <div class="scard scard--stat" id="card-viewers" data-change-open="View-only seats are now surfaced as their own card. They don't count toward the seat limit.">
         <div class="scard__label">
           VIEW-ONLY SEATS
           <button class="scard__label-icon" data-tooltip="Members who don't occupy a paid seat.&#10;&#10;Includes Project Viewers and members with view-only access enabled.&#10;&#10;Reassigning any of these to a standard role makes them billable immediately.">
@@ -138,7 +138,7 @@
         </div>
       </div>
 
-      <div class="scard scard--stat" id="card-merge">
+      <div class="scard scard--stat" id="card-merge" data-change-open="Possible duplicates are now surfaced as a dedicated card with a count and quick access to review them.">
         <div class="scard__label">
           MERGE SUGGESTIONS
           <button class="scard__label-icon" data-tooltip="Possible duplicates detected by name or username similarity with Silent App members. Merge within the grace period to avoid extra charges.">
@@ -186,13 +186,13 @@
             <span class="material-symbols-rounded search-box__ico">search</span>
             <input class="search-box__input" type="text" id="search-input" placeholder="Search members…" />
           </div>
-          <button class="table-icon-btn table-icon-btn--labeled">
+          <button class="table-icon-btn table-icon-btn--labeled" data-change="Moved — Previously inside the batch actions dropdown. Now a standalone button in the table toolbar.">
             <span class="material-symbols-rounded">upload</span>
             Bulk update members
           </button>
         </div>
         <div class="toolbar-right">
-          <button class="table-icon-btn" aria-label="Export" data-tooltip="Export" data-change="Moved — previously a button in the page header alongside other actions. Now lives inside the table toolbar as an icon button.">
+          <button class="table-icon-btn" aria-label="Export" data-tooltip="Export" data-change="Moved — Previously a button in the page header alongside other actions. Now lives inside the table toolbar as an icon button.">
             <span class="material-symbols-rounded">download</span>
           </button>
           <div class="col-picker-wrapper" id="col-picker-wrapper">
@@ -531,7 +531,7 @@
       </div>
 
       <!-- Billing Status — interactive -->
-      <div class="drawer__field">
+      <div class="drawer__field" data-change-open="Billing Status filter — lets you scope the table to paid seats, grace period, or view-only seats.">
         <span class="drawer__field-label">Billing Status</span>
         <div class="drawer__select-wrap">
           <select class="drawer__select" id="drawer-billing-select">
@@ -545,7 +545,7 @@
       </div>
 
       <!-- Account Type — interactive -->
-      <div class="drawer__field">
+      <div class="drawer__field" data-change-open="Account Type filter — lets you filter by Silent, Standard, SCIM, or SSO account type.">
         <span class="drawer__field-label">Account Type</span>
         <div class="drawer__select-wrap">
           <select class="drawer__select" id="drawer-account-type-select">
@@ -784,13 +784,18 @@
   // ── Tooltip ─────────────────────────────────────────────────────
   document.addEventListener('mousemove', e => {
     if (!document.body.classList.contains('highlight-mode')) return;
-    const target = e.target.closest('[data-change], [data-change-open]');
+    const target = e.target.closest('[data-change], [data-change-open], [data-change-wip]');
     if (!target) { tooltip.hidden = true; return; }
 
     if (target.dataset.changeOpen !== undefined) {
-      tooltip.innerHTML = `<span class="highlight-tooltip__title">Still figuring this out</span>${target.dataset.changeOpen}`;
+      tooltip.innerHTML = `<span class="highlight-tooltip__title">New</span>${target.dataset.changeOpen}`;
+    } else if (target.dataset.changeWip !== undefined) {
+      tooltip.innerHTML = `<span class="highlight-tooltip__title" style="color:#3B82F6">In progress</span>${target.dataset.changeWip}`;
     } else {
-      tooltip.textContent = target.dataset.change;
+      const parts = target.dataset.change.split(' — ');
+      const title = parts[0];
+      const body  = parts.slice(1).join(' — ');
+      tooltip.innerHTML = `<span class="highlight-tooltip__title" style="color:#FCD34D">${title}</span>${body || ''}`;
     }
     tooltip.hidden = false;
 

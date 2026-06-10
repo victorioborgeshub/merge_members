@@ -392,10 +392,16 @@
     const pageMembers = sorted.slice((page - 1) * perPage, page * perPage);
 
     const COL_CHANGES = {
-      member:      'Fixed column — the Member column is now sticky. It stays visible as you scroll the table horizontally.',
-      accountType: 'New column — account type (Standard, Silent, SCIM, SSO) was previously shown as a badge inside the Member column.',
-      billing:     'New column — billing status doesn\'t exist on the current Members page.',
-      team:        'New column — shows the team each member belongs to. Used with the Team filter in the page header to scope the table to a specific team.',
+      member: 'Redesigned — Now sticky. Email moved from its own column to below the member name. Account type moved to its own dedicated column.',
+    };
+    const COL_CHANGES_OPEN = {
+      team:        'Shows the team each member belongs to. Used with the Team filter in the page header to scope the table to a specific team.',
+      accountType: 'Account type (Standard, Silent, SCIM, SSO) was previously shown as a badge inside the Member column.',
+      billing:     'Billing status column — Didn\'t exist on the current Members page.',
+    };
+    const COL_CHANGES_WIP = {
+      payRate:  'Pay rate split from the combined Payment column — being built by the team.',
+      billRate: 'Bill rate split from the combined Payment column — being built by the team.',
     };
 
     document.getElementById('members-thead').innerHTML = `<tr>
@@ -406,7 +412,7 @@
         </label>
       </th>
       ${cols.map(c => {
-        const changeAttr = COL_CHANGES[c.id] ? ` data-change="${COL_CHANGES[c.id]}"` : '';
+        const changeAttr = COL_CHANGES[c.id] ? ` data-change="${COL_CHANGES[c.id]}"` : COL_CHANGES_OPEN[c.id] ? ` data-change-open="${COL_CHANGES_OPEN[c.id]}"` : COL_CHANGES_WIP[c.id] ? ` data-change-wip="${COL_CHANGES_WIP[c.id]}"` : '';
         if (c.id !== 'billing') return `<th${changeAttr}>${c.label}</th>`;
         const active = sortState.col === 'billing';
         return `<th class="th-sortable${active ? ' th-sortable--active' : ''}" data-sort-col="billing"${changeAttr}>
@@ -521,7 +527,7 @@
 
     const wrap = document.createElement('div');
     wrap.className = 'status-filter-pills';
-    wrap.dataset.change = 'Redesigned — previously there was a dedicated "Status" column in the table and a status toggle inside the Filters panel. Both have been removed. Status filtering now lives here as quick-select pills in the toolbar.';
+    wrap.dataset.change = 'Redesigned — Previously there was a dedicated "Status" column in the table and a status toggle inside the Filters panel. Both have been removed. Status filtering now lives here as quick-select pills in the toolbar.';
     wrap.innerHTML = `
       <button class="sfpill sfpill--on" data-sf="active">Active <span class="sfpill__count">(${activeCount})</span></button>
       <button class="sfpill" data-sf="removed">Removed <span class="sfpill__count">(${removedCount})</span></button>

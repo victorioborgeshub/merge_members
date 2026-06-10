@@ -2692,6 +2692,12 @@ button { cursor: pointer; }
   border-radius: 6px;
   cursor: help;
 }
+.highlight-mode [data-change-wip] {
+  outline: 3px solid #3B82F6;
+  outline-offset: 3px;
+  border-radius: 6px;
+  cursor: help;
+}
 .highlight-tooltip {
   position: fixed;
   z-index: 2000;
