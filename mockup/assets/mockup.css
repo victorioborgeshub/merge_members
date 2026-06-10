@@ -971,6 +971,9 @@ button { cursor: pointer; }
 .has-tooltip:hover::before {
   opacity: 1;
 }
+/* Disable CSS pseudo-tooltip inside the scroll container — JS tooltip handles this instead */
+.table-scroll .has-tooltip::before,
+.table-scroll .has-tooltip:hover::before { display: none; }
 .billing-grace-days {
   font-size: 12px;
   color: var(--gray-500);
@@ -1204,6 +1207,8 @@ button { cursor: pointer; }
 .table-scroll {
   overflow-x: scroll;
   border-radius: 0 0 8px 8px;
+  position: relative;
+  z-index: 5;
 }
 /* Force scrollbar to always show on macOS (which hides it by default) */
 .table-scroll::-webkit-scrollbar {

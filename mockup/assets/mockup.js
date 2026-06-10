@@ -178,15 +178,15 @@
     return `<span class="tt-label ${on ? 'tt-label--on' : 'tt-label--off'}">${on ? 'Enabled' : 'Disabled'}</span>`;
   }
 
-  const BILLING_BILLED_TIP = "Seats you're currently paying for. Open seats fill when members join and clear at the next pay period.";
-  const BILLING_GRACE_TIP  = "Silent App members in a 16-day free window before billing starts.";
-  const BILLING_VIEWER_TIP = "Members with view-only access.\nThey don’t use a paid seat.";
+  const BILLING_BILLED_TIP = "Seats you're currently paying for.\n\nOpen seats fill when members join and clear at the next pay period.";
+  const BILLING_GRACE_TIP  = "Members in their 16-day billing window.\n\nAfter that, they become paid seats unless merged or removed.";
+  const BILLING_VIEWER_TIP = "Members who don’t occupy a paid seat.&#10;&#10;Includes Project Viewers and members with view-only access enabled.&#10;&#10;Reassigning any of these to a standard role makes them billable immediately.";
 
   function billingCell(m) {
     if (m.billing === 'billed')
       return `<span class="billing-billed has-tooltip" data-tooltip="${BILLING_BILLED_TIP}">Paid seat</span>`;
     if (m.billing === 'viewer')
-      return `<span class="billing-viewer has-tooltip" data-tooltip="${BILLING_VIEWER_TIP}">Project viewer</span>`;
+      return `<span class="billing-viewer has-tooltip" data-tooltip="${BILLING_VIEWER_TIP}">View-only</span>`;
     if (!isSilentOrg)
       return `<span class="billing-billed has-tooltip" data-tooltip="${BILLING_BILLED_TIP}">Paid seat</span>`;
     if ((m.billing === 'grace' || m.billing === 'unbilled') && m.graceDays)

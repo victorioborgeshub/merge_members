@@ -91,7 +91,7 @@
       <div class="scard scard--stat" id="card-paid-seats" data-change="Redesigned — replaces the old combined Members card. Now split into 3 separate cards: Paid Seats, Grace Period, and Project Viewers.">
         <div class="scard__label">
           MEMBERS IN PAID SEATS
-          <button class="scard__label-icon" data-tooltip="Seats you're currently paying for.&#10;Open seats fill when members join and clear at the next pay period.">
+          <button class="scard__label-icon" data-tooltip="Seats you're currently paying for.&#10;&#10;Open seats fill when members join and clear at the next pay period.">
             <span class="material-symbols-rounded">info</span>
           </button>
         </div>
@@ -108,7 +108,7 @@
       <div class="scard scard--stat" id="card-grace-period">
         <div class="scard__label">
           MEMBERS IN GRACE PERIOD
-          <button class="scard__label-icon" data-tooltip="New Silent App members in their 16-day billing window. After that, they become paid seats unless merged or removed.">
+          <button class="scard__label-icon" data-tooltip="Members in their 16-day billing window.&#10;&#10;After that, they become paid seats unless merged or removed.">
             <span class="material-symbols-rounded">info</span>
           </button>
         </div>
@@ -122,10 +122,10 @@
       </div>
 
       <!-- Project Viewers -->
-      <div class="scard scard--stat" id="card-viewers" data-change="New — Project viewers are now surfaced as their own card. They don't count toward the seat limit.">
+      <div class="scard scard--stat" id="card-viewers" data-change="New — View-only seats are now surfaced as their own card. They don't count toward the seat limit.">
         <div class="scard__label">
-          PROJECT VIEWERS
-          <button class="scard__label-icon" data-tooltip="Members with view-only access.&#10;They don't use a paid seat.">
+          VIEW-ONLY SEATS
+          <button class="scard__label-icon" data-tooltip="Members who don't occupy a paid seat.&#10;&#10;Includes Project Viewers and members with view-only access enabled.&#10;&#10;Reassigning any of these to a standard role makes them billable immediately.">
             <span class="material-symbols-rounded">info</span>
           </button>
         </div>
@@ -538,7 +538,7 @@
             <option value="">All</option>
             <option value="paid">Paid seat</option>
             <option value="grace_period">Grace period</option>
-            <option value="viewer">Project viewer (no seat)</option>
+            <option value="viewer">View-only seat</option>
           </select>
           <span class="material-symbols-rounded">keyboard_arrow_down</span>
         </div>
@@ -666,6 +666,52 @@
   </div>
 
 </div>
+
+<!-- ── Table tooltip (fixed-position, escapes overflow container) ── -->
+<div id="table-tip" style="position:fixed;z-index:9999;background:#111827;color:#fff;font-size:12px;line-height:1.5;padding:6px 10px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity 120ms;max-width:260px;white-space:pre-line;text-align:center;" hidden></div>
+<script>
+(function () {
+  const tip = document.getElementById('table-tip');
+  const scroll = document.getElementById('members-tbody')?.closest('.table-scroll');
+  if (!scroll) return;
+
+  let active = null;
+
+  scroll.addEventListener('mouseover', function (e) {
+    const el = e.target.closest('[data-tooltip]');
+    if (!el) { hide(); return; }
+    if (el === active) return;
+    active = el;
+    tip.textContent = el.dataset.tooltip;
+    tip.hidden = false;
+    tip.style.opacity = '0'; // measure before showing
+
+    requestAnimationFrame(function () {
+      const r  = el.getBoundingClientRect();
+      const tw = tip.offsetWidth;
+      const th = tip.offsetHeight;
+      const gap = 6;
+      let x = r.left + r.width / 2 - tw / 2;
+      let y = r.top - th - gap;
+      if (y < 8) y = r.bottom + gap;
+      if (x + tw > window.innerWidth - 8) x = window.innerWidth - tw - 8;
+      if (x < 8) x = 8;
+      tip.style.left = x + 'px';
+      tip.style.top  = y + 'px';
+      tip.style.opacity = '1';
+    });
+  });
+
+  scroll.addEventListener('mouseout', function (e) {
+    if (!active) return;
+    if (!active.contains(e.relatedTarget)) hide();
+  });
+
+  scroll.addEventListener('mouseleave', hide);
+
+  function hide() { tip.style.opacity = '0'; active = null; }
+})();
+</script>
 
 <!-- ── Toast ───────────────────────────────────────────────────── -->
 <div class="toast" id="toast" hidden>
