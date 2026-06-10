@@ -578,6 +578,16 @@ button { cursor: pointer; }
 }
 .table-icon-btn:hover { background: var(--gray-50); color: var(--gray-900); }
 .table-icon-btn .material-symbols-rounded { font-size: 18px; }
+.table-icon-btn--labeled {
+  width: auto;
+  height: auto;
+  padding: 7px 10px;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: inherit;
+  white-space: nowrap;
+}
 
 .table-icon-btn::after {
   content: attr(data-tooltip);

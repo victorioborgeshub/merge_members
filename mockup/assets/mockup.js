@@ -187,6 +187,8 @@
       return `<span class="billing-billed has-tooltip" data-tooltip="${BILLING_BILLED_TIP}">Paid seat</span>`;
     if (m.billing === 'viewer')
       return `<span class="billing-viewer has-tooltip" data-tooltip="${BILLING_VIEWER_TIP}">Project viewer</span>`;
+    if (!isSilentOrg)
+      return `<span class="billing-billed has-tooltip" data-tooltip="${BILLING_BILLED_TIP}">Paid seat</span>`;
     if ((m.billing === 'grace' || m.billing === 'unbilled') && m.graceDays)
       return `<div class="billing-grace-cell has-tooltip" data-tooltip="${BILLING_GRACE_TIP}">
         <span class="billing-grace-days">${m.graceDays} days left</span>
@@ -256,6 +258,7 @@
   let teamFilters   = new Set();
   let billingFilter     = '';
   let accountTypeFilter = '';
+  let isSilentOrg       = false;
 
   function billingSortKey(m) {
     const days = m.graceDays || 0;
@@ -1354,6 +1357,7 @@
   // ── Silent app org toggle ─────────────────────────────────────
   (function () {
     const cardMerge = document.getElementById('card-merge');
+    const cardGrace = document.getElementById('card-grace-period');
     const mergeBtn  = document.querySelector('.btn--outline-primary');
 
     // Build and inject toggle into the topbar, right after the timer
@@ -1379,7 +1383,9 @@
     function apply(on) {
       toggle.classList.toggle('is-on', on);
       toggle.setAttribute('aria-checked', String(on));
+      isSilentOrg      = on;
       cardMerge.hidden = !on;
+      cardGrace.hidden = !on;
       mergeBtn.hidden  = !on;
       pgState.page = 1;
       renderPage();
