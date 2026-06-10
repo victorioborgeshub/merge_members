@@ -1257,6 +1257,7 @@ button { cursor: pointer; }
   font-weight: 400;
   line-height: 1.4;
 }
+.stack-cell--base { font-size: 14px; }
 .stack-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
 .stack-more  { font-size: 11px; color: var(--gray-400); font-style: italic; }
 

@@ -157,7 +157,7 @@
   function limitsCell(l) {
     if (!l || l.weeklyHours == null) return '<span class="text-muted">—</span>';
     const daily = l.dailyHours ? `${l.dailyHours}h / day` : 'No daily limit';
-    return `<div class="stack-cell">
+    return `<div class="stack-cell stack-cell--base">
       <span>${l.weeklyHours}h / week</span>
       <span>${daily}</span>
     </div>`;
@@ -213,7 +213,8 @@
   // ── Cell edit buttons (pencil, appears on row hover) ─────────
   const CELL_EDIT_TOOLTIPS = {
     role:     'Edit role',
-    payment:  'Edit payment details',
+    payRate:  'Edit pay rate',
+    billRate: 'Edit bill rate',
     projects: 'Edit project assignments',
     limits:   'Edit time limits',
   };
@@ -232,7 +233,8 @@
       case 'team':         return `<span class="cell-text">${m.team || '—'}</span>`;
       case 'projects':     return `<div class="cell-editable"><span class="text-muted">${m.projects || '—'}</span>${editBtnHTML('projects')}</div>`;
       case 'workOrders':   return `<span class="text-muted">${m.workOrders || '—'}</span>`;
-      case 'payment':      return `<div class="cell-editable">${paymentCell(m.payment)}${editBtnHTML('payment')}</div>`;
+      case 'payRate':      return `<div class="cell-editable"><span class="cell-text">${m.payment?.payRate != null ? `$${m.payment.payRate}` : '—'}</span>${editBtnHTML('payRate')}</div>`;
+      case 'billRate':     return `<div class="cell-editable"><div class="stack-cell stack-cell--base"><span>${m.payment?.billRate != null ? `$${m.payment.billRate}` : '—'}</span><span>${m.payment?.frequency ?? '—'}</span></div>${editBtnHTML('billRate')}</div>`;
       case 'limits':       return `<div class="cell-editable">${limitsCell(m.limits)}${editBtnHTML('limits')}</div>`;
       case 'screenshots':  return screenshotsCell(m.screenshots);
       case 'appsUrls':     return appsUrlsCell(m.appsAndUrls);
