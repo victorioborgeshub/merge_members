@@ -678,7 +678,7 @@
   let active = null;
 
   scroll.addEventListener('mouseover', function (e) {
-    const el = e.target.closest('[data-tooltip]');
+    const el = e.target.closest('.has-tooltip[data-tooltip]');
     if (!el) { hide(); return; }
     if (el === active) return;
     active = el;

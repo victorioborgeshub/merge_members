@@ -164,8 +164,8 @@
   }
 
   function screenshotsCell(s) {
-    if (!s || !s.active) return '<span class="text-muted">Off</span>';
-    return `<a class="screenshots-link" href="#">${s.count}</a>`;
+    if (!s || !s.active) return '<span class="text-muted">—</span>';
+    return `<button class="scard__action">${s.count}</button>`;
   }
 
   function appsUrlsCell(a) {
