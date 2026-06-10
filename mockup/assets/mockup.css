@@ -288,13 +288,13 @@ button { cursor: pointer; }
   letter-spacing: 0.06em;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 2px solid var(--gray-400);
   margin-bottom: -1px;
   cursor: pointer;
   transition: color 120ms;
   white-space: nowrap;
 }
-.tab-bar__item:hover { color: #1D4ED8; }
+.tab-bar__item:hover { color: #1D4ED8; border-bottom-color: #1D4ED8; }
 .tab-bar__item--active {
   color: #1D4ED8;
   border-bottom-color: #1D4ED8;
