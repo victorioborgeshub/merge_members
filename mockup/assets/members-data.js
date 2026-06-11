@@ -35,7 +35,8 @@
   const STATES    = ['California','Texas','New York','Florida','Washington','Illinois','Georgia','Colorado','Arizona','Ontario','England','Bavaria'];
   const COLORS    = ['#0168DD','#7C3AED','#059669','#D97706','#DC2626','#0891B2','#BE185D','#65A30D','#EA580C','#6366F1'];
   const SS_FREQS  = ['Every 5 min','Every 10 min','Every 15 min','Every 30 min',null];
-  const PAY_FREQ  = ['Hourly','Weekly','Bi-weekly','Monthly','Salary'];
+  const PAY_FREQ   = ['Hourly','Weekly','Bi-weekly','Monthly','Salary'];
+  const RATE_TYPES = ['hr','hr','hr','fixed','fixed'];
   const EMP_TYPES = ['Employee','Contractor','Part-time','Intern'];
   const WORK_ARR  = ['Remote','In-office','Hybrid'];
   const TAX_TYPES = ['W-2','1099','VAT','PAYE'];
@@ -73,7 +74,7 @@
       workEmail: email, status: st, role, team: pick(TEAMS), accountType: 'silent',
       projects:     randInt(0, 12),
       workOrders:   randInt(0, 8),
-      payment:      { payRate: pr, billRate: br, frequency: pick(PAY_FREQ) },
+      payment:      { payRate: pr, billRate: br, frequency: pick(PAY_FREQ), rateType: pick(RATE_TYPES) },
       limits:       { weeklyHours: wh, dailyHours: dh },
       screenshots:  { frequency: ssf, count: randInt(0,450), active: ssf !== null },
       appsAndUrls:  { tracked: randBool(0.7), count: randInt(0,250) },

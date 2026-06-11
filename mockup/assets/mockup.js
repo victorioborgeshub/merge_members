@@ -233,8 +233,24 @@
       case 'team':         return `<span class="cell-text">${m.team || '—'}</span>`;
       case 'projects':     return `<div class="cell-editable"><span class="text-muted">${m.projects || '—'}</span>${editBtnHTML('projects')}</div>`;
       case 'workOrders':   return `<span class="text-muted">${m.workOrders || '—'}</span>`;
-      case 'payRate':      return `<div class="cell-editable"><span class="cell-text">${m.payment?.payRate != null ? `$${m.payment.payRate}` : '—'}</span>${editBtnHTML('payRate')}</div>`;
-      case 'billRate':     return `<div class="cell-editable"><div class="stack-cell stack-cell--base"><span>${m.payment?.billRate != null ? `$${m.payment.billRate}` : '—'}</span><span>${m.payment?.frequency ?? '—'}</span></div>${editBtnHTML('billRate')}</div>`;
+      case 'payRate': {
+        const pp = m.payment;
+        if (!pp || pp.payRate == null) return `<div class="cell-editable"><span class="text-muted">Not set</span>${editBtnHTML('payRate')}</div>`;
+        const pcur = m.employment?.accounting?.currency || 'USD';
+        const prt  = pp.rateType ?? (pp.frequency === 'Salary' || pp.frequency === 'Monthly' ? 'fixed' : 'hr');
+        const freqMap = { 'Hourly':'None','Weekly':'Weekly','Bi-weekly':'Bi-weekly','Monthly':'Monthly','Salary':'Monthly' };
+        const pperiod = freqMap[pp.frequency] || pp.frequency || '—';
+        const pappv = m.timeTracking?.approvals;
+        const pmeta = [prt === 'hr' ? 'Hourly' : 'Fixed', pperiod, pappv ? 'Timesheet approval' : null].filter(Boolean).join(' · ');
+        return `<div class="cell-editable"><div class="stack-cell stack-cell--base"><span class="cell-text">${pcur} ${pp.payRate}.00</span><span style="color:var(--gray-500)">${pmeta}</span></div>${editBtnHTML('payRate')}</div>`;
+      }
+      case 'billRate': {
+        const bp = m.payment;
+        if (!bp || bp.billRate == null) return `<div class="cell-editable"><span class="text-muted">—</span>${editBtnHTML('billRate')}</div>`;
+        const bcur = m.employment?.accounting?.currency || 'USD';
+        const brt  = bp.rateType ?? (bp.frequency === 'Salary' || bp.frequency === 'Monthly' ? 'fixed' : 'hr');
+        return `<div class="cell-editable"><div class="stack-cell stack-cell--base"><span class="cell-text">${bcur} ${bp.billRate}.00</span><span style="color:var(--gray-500)">${brt === 'hr' ? 'Hourly' : 'Fixed'}</span></div>${editBtnHTML('billRate')}</div>`;
+      }
       case 'limits':       return `<div class="cell-editable">${limitsCell(m.limits)}${editBtnHTML('limits')}</div>`;
       case 'screenshots':  return screenshotsCell(m.screenshots);
       case 'appsUrls':     return appsUrlsCell(m.appsAndUrls);
