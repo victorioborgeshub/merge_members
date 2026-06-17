@@ -257,7 +257,7 @@
     { id:'billRate',     label:'Bill rate',     key:'billRate',     visible:true  },
     { id:'limits',       label:'Limits',        key:'limits',       visible:true  },
     { id:'billing',      label:'Billing',       key:'billing',      visible:true  },
-    { id:'accountType',  label:'Account type',  key:'accountType',  visible:true  },
+    { id:'accountType',  label:'Account setup',  key:'accountType',  visible:true  },
     { id:'timeTracking', label:'Time tracking', key:'timeTracking', visible:true  },
     { id:'screenshots',  label:'Screenshots',   key:'screenshots',  visible:true },
     { id:'appsUrls',     label:'Apps & URLs',   key:'appsAndUrls',  visible:true },

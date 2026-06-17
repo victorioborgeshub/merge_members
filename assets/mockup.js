@@ -429,6 +429,7 @@
       </th>
       ${cols.map(c => {
         const changeAttr = COL_CHANGES[c.id] ? ` data-change="${COL_CHANGES[c.id]}"` : COL_CHANGES_OPEN[c.id] ? ` data-change-open="${COL_CHANGES_OPEN[c.id]}"` : COL_CHANGES_WIP[c.id] ? ` data-change-wip="${COL_CHANGES_WIP[c.id]}"` : '';
+        if (c.id === 'accountType') return `<th${changeAttr} data-editable='{"name":"Account type column","fields":[{"key":"label","label":"Label","type":"text"},{"key":"infoIcon","label":"Info icon","type":"toggle","options":[{"label":"On","value":"on"},{"label":"Off","value":"off"}]},{"key":"tooltip","label":"Tooltip copy","type":"textarea"}]}'>${c.label}<span class="material-symbols-rounded col-info-icon has-tooltip" data-tooltip="How this account was provisioned:&#10;&#10;Standard — invited manually&#10;Silent — auto-created by the desktop agent&#10;SSO — signed in via 'single sign-on'&#10;SCIM — auto-created from directory">info</span></th>`;
         if (c.id !== 'billing') return `<th${changeAttr}>${c.label}</th>`;
         const active = sortState.col === 'billing';
         return `<th class="th-sortable${active ? ' th-sortable--active' : ''}" data-sort-col="billing"${changeAttr}>
@@ -804,167 +805,6 @@
     addMemberPanel.hidden = true;
     addMemberWrap.classList.remove('is-open');
     addMemberBtn.setAttribute('aria-expanded', 'false');
-    memberFilterPanel.hidden = true;
-    memberFilterWrap.classList.remove('is-open');
-    teamFilterPanel.hidden = true;
-    teamFilterWrap.classList.remove('is-open');
-  });
-
-  // ── Header filter dropdowns ───────────────────────────────────
-
-  const memberFilterWrap  = document.getElementById('member-filter-wrap');
-  const memberFilterBtn   = document.getElementById('member-filter-btn');
-  const memberFilterPanel = document.getElementById('member-filter-panel');
-  const teamFilterWrap    = document.getElementById('team-filter-wrap');
-  const teamFilterBtn     = document.getElementById('team-filter-btn');
-  const teamFilterPanel   = document.getElementById('team-filter-panel');
-
-  function checkIco(active) {
-    const color = active ? '#0168dd' : '';
-    return `<span class="material-symbols-rounded pg-filter-check-ico" style="color:${color}">${active ? 'check_box' : 'check_box_outline_blank'}</span>`;
-  }
-
-  function dropdownShell(searchPlaceholder, allSelected, optionsHTML) {
-    return `
-      <div class="pg-filter-search-wrap">
-        <span class="material-symbols-rounded pg-filter-search-ico">search</span>
-        <input class="pg-filter-search-input" type="text" placeholder="${searchPlaceholder}" />
-      </div>
-      <div class="pg-filter-divider"></div>
-      <button class="pg-filter-select-all" data-action="toggle-all">
-        ${checkIco(allSelected)}
-        <span class="pg-filter-select-all-label">${allSelected ? 'Unselect all' : 'Select all'}</span>
-      </button>
-      <div class="pg-filter-divider"></div>
-      ${optionsHTML}`;
-  }
-
-  function populateMemberDropdown() {
-    const items = window.MEMBERS.filter(m => m.status !== 'removed' && !m.mergeIntoId);
-    const allSel = items.length > 0 && items.every(m => memberFilters.has(m.id));
-    const opts = items.map(m => {
-      const sel = memberFilters.has(m.id);
-      return `<button class="pg-filter-option" data-value="${m.id}">${checkIco(sel)}<span>${m.name}</span></button>`;
-    }).join('');
-    memberFilterPanel.innerHTML = dropdownShell('Search members…', allSel, opts);
-  }
-
-  function populateTeamDropdown() {
-    const teams = [...new Set(window.MEMBERS.filter(m => m.status !== 'removed').map(m => m.team).filter(Boolean))].sort();
-    const allSel = teams.length > 0 && teams.every(t => teamFilters.has(t));
-    const opts = teams.map(t => {
-      const sel = teamFilters.has(t);
-      return `<button class="pg-filter-option" data-value="${t}">${checkIco(sel)}<span>${t}</span></button>`;
-    }).join('');
-    teamFilterPanel.innerHTML = dropdownShell('Search teams…', allSel, opts);
-  }
-
-  function filterPanelOptions(panel, query) {
-    panel.querySelectorAll('.pg-filter-option[data-value]').forEach(btn => {
-      btn.style.display = btn.textContent.trim().toLowerCase().includes(query.toLowerCase()) ? '' : 'none';
-    });
-  }
-
-  function updateMemberLabel() {
-    const label = memberFilterBtn.querySelector('.pg-filter-label');
-    if (memberFilters.size === 0) { label.textContent = 'All members'; return; }
-    if (memberFilters.size === 1) {
-      const m = window.MEMBERS.find(x => x.id === [...memberFilters][0]);
-      label.textContent = m ? m.name : '1 member';
-    } else {
-      label.textContent = `${memberFilters.size} members`;
-    }
-  }
-
-  function updateTeamLabel() {
-    const label = teamFilterBtn.querySelector('.pg-filter-label');
-    if (teamFilters.size === 0) { label.textContent = 'All teams'; return; }
-    label.textContent = teamFilters.size === 1 ? [...teamFilters][0] : `${teamFilters.size} teams`;
-  }
-
-  function syncSelectAll(panel, selectedSet, allItems) {
-    const allSel = allItems.length > 0 && allItems.every(v => selectedSet.has(v));
-    const btn = panel.querySelector('[data-action="toggle-all"]');
-    if (!btn) return;
-    btn.querySelector('.pg-filter-check-ico').textContent = allSel ? 'check_box' : 'check_box_outline_blank';
-    btn.querySelector('.pg-filter-check-ico').style.color = allSel ? '#0168dd' : '';
-    btn.querySelector('.pg-filter-select-all-label').textContent = allSel ? 'Unselect all' : 'Select all';
-  }
-
-  memberFilterBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    const opening = memberFilterPanel.hidden;
-    if (opening) populateMemberDropdown();
-    memberFilterPanel.hidden = !opening;
-    memberFilterWrap.classList.toggle('is-open', opening);
-  });
-
-  memberFilterPanel.addEventListener('click', e => {
-    e.stopPropagation();
-    const toggleAll = e.target.closest('[data-action="toggle-all"]');
-    if (toggleAll) {
-      const items = window.MEMBERS.filter(m => m.status !== 'removed' && !m.mergeIntoId);
-      const allSel = items.every(m => memberFilters.has(m.id));
-      allSel ? memberFilters.clear() : items.forEach(m => memberFilters.add(m.id));
-      populateMemberDropdown();
-      updateMemberLabel();
-      applyFilters();
-      return;
-    }
-    const opt = e.target.closest('[data-value]');
-    if (!opt) return;
-    const id = parseInt(opt.dataset.value, 10);
-    memberFilters.has(id) ? memberFilters.delete(id) : memberFilters.add(id);
-    const sel = memberFilters.has(id);
-    opt.querySelector('.pg-filter-check-ico').textContent = sel ? 'check_box' : 'check_box_outline_blank';
-    opt.querySelector('.pg-filter-check-ico').style.color = sel ? '#0168dd' : '';
-    const items = window.MEMBERS.filter(m => m.status !== 'removed' && !m.mergeIntoId).map(m => m.id);
-    syncSelectAll(memberFilterPanel, memberFilters, items);
-    updateMemberLabel();
-    applyFilters();
-  });
-
-  memberFilterPanel.addEventListener('input', e => {
-    if (e.target.classList.contains('pg-filter-search-input'))
-      filterPanelOptions(memberFilterPanel, e.target.value);
-  });
-
-  teamFilterBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    const opening = teamFilterPanel.hidden;
-    if (opening) populateTeamDropdown();
-    teamFilterPanel.hidden = !opening;
-    teamFilterWrap.classList.toggle('is-open', opening);
-  });
-
-  teamFilterPanel.addEventListener('click', e => {
-    e.stopPropagation();
-    const toggleAll = e.target.closest('[data-action="toggle-all"]');
-    if (toggleAll) {
-      const teams = [...new Set(window.MEMBERS.filter(m => m.status !== 'removed').map(m => m.team).filter(Boolean))];
-      const allSel = teams.every(t => teamFilters.has(t));
-      allSel ? teamFilters.clear() : teams.forEach(t => teamFilters.add(t));
-      populateTeamDropdown();
-      updateTeamLabel();
-      applyFilters();
-      return;
-    }
-    const opt = e.target.closest('[data-value]');
-    if (!opt) return;
-    const val = opt.dataset.value;
-    teamFilters.has(val) ? teamFilters.delete(val) : teamFilters.add(val);
-    const sel = teamFilters.has(val);
-    opt.querySelector('.pg-filter-check-ico').textContent = sel ? 'check_box' : 'check_box_outline_blank';
-    opt.querySelector('.pg-filter-check-ico').style.color = sel ? '#0168dd' : '';
-    const teams = [...new Set(window.MEMBERS.filter(m => m.status !== 'removed').map(m => m.team).filter(Boolean))];
-    syncSelectAll(teamFilterPanel, teamFilters, teams);
-    updateTeamLabel();
-    applyFilters();
-  });
-
-  teamFilterPanel.addEventListener('input', e => {
-    if (e.target.classList.contains('pg-filter-search-input'))
-      filterPanelOptions(teamFilterPanel, e.target.value);
   });
 
   // ── Column picker ─────────────────────────────────────────────
@@ -1339,9 +1179,19 @@
 
   function syncCardButtons() {
     Object.entries(BILLING_CARD_MAP).forEach(([value, cardId]) => {
-      const btn = document.querySelector(`#${cardId} .scard__action`);
-      if (!btn) return;
-      btn.textContent = billingFilter === value ? 'Clear' : 'Show';
+      const card = document.getElementById(cardId);
+      const btn  = card?.querySelector('.scard__action');
+      if (!card || !btn) return;
+      const isActive = billingFilter === value;
+      if (isActive) {
+        btn.innerHTML = 'Clear <span class="material-symbols-rounded scard__action-icon">close</span>';
+        btn.dataset.tooltip = 'Show all members again';
+      } else {
+        btn.innerHTML = 'Show';
+        btn.dataset.tooltip = 'Show only these members in the table';
+      }
+      btn.classList.add('has-tooltip');
+      card.classList.toggle('scard--active', isActive);
     });
   }
 
@@ -1378,35 +1228,13 @@
     applyFilters();
   });
 
-  // ── Silent app org toggle ─────────────────────────────────────
+  // ── Silent app org state ─────────────────────────────────────
   (function () {
     const cardMerge = document.getElementById('card-merge');
     const cardGrace = document.getElementById('card-grace-period');
     const mergeBtn  = document.querySelector('.btn--outline-primary');
 
-    // Build and inject toggle into the topbar, right after the timer
-    const toggleEl = document.createElement('div');
-    toggleEl.id = 'silent-toggle';
-    toggleEl.className = 'silent-toggle';
-    toggleEl.setAttribute('role', 'switch');
-    toggleEl.setAttribute('aria-checked', 'false');
-    toggleEl.setAttribute('aria-label', 'Silent app');
-    toggleEl.setAttribute('tabindex', '0');
-    toggleEl.innerHTML = '<div class="silent-toggle__track"><div class="silent-toggle__thumb"></div></div><span class="silent-toggle__label">Silent app</span>';
-
-    const topbarLeft = document.querySelector('#hs-topbar .hs-topbar-left');
-    if (topbarLeft) {
-      const divider = document.createElement('div');
-      divider.className = 'hs-topbar-divider';
-      topbarLeft.appendChild(divider);
-      topbarLeft.appendChild(toggleEl);
-    }
-
-    const toggle = toggleEl;
-
     function apply(on) {
-      toggle.classList.toggle('is-on', on);
-      toggle.setAttribute('aria-checked', String(on));
       isSilentOrg      = on;
       cardMerge.hidden = !on;
       cardGrace.hidden = !on;
@@ -1415,12 +1243,7 @@
       renderPage();
     }
 
-    apply(false);
-
-    toggle.addEventListener('click', () => apply(!toggle.classList.contains('is-on')));
-    toggle.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); apply(!toggle.classList.contains('is-on')); }
-    });
+    apply(true);
   })();
 
 })();

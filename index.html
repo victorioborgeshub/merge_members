@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/mockup.css?v=4" />
+  <link rel="stylesheet" href="assets/mockup.css?v=5" />
 </head>
 <body>
 
@@ -50,28 +50,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <!-- ── Filters row ──────────────────────────────────────── -->
-    <div class="pg-header-filters">
-      <div class="pg-filter-wrap" id="member-filter-wrap" data-change-open="Scope selector for filtering the table to specific members.">
-        <button class="btn btn--ghost pg-filter-select" id="member-filter-btn">
-          <span class="pg-filter-label">All members</span>
-          <span class="material-symbols-rounded">expand_more</span>
-        </button>
-        <div class="pg-filter-panel" id="member-filter-panel" hidden></div>
-      </div>
-      <div class="pg-filter-wrap" id="team-filter-wrap" data-change-open="Scope selector for filtering the table to a specific team.">
-        <button class="btn btn--ghost pg-filter-select" id="team-filter-btn">
-          <span class="pg-filter-label">All teams</span>
-          <span class="material-symbols-rounded">expand_more</span>
-        </button>
-        <div class="pg-filter-panel" id="team-filter-panel" hidden></div>
-      </div>
-      <button class="btn btn--ghost" id="btn-filters" data-change="Moved — Filters button was previously on the right side of this row. It now sits on the left, next to the scope selectors.">
-        <span class="material-symbols-rounded">filter_list</span>
-        Filters
-        <span class="filter-badge" id="filter-badge" hidden></span>
-      </button>
     </div>
     <!-- ── Tabs ──────────────────────────────────────────────── -->
     <div class="tab-bar">
@@ -114,7 +92,7 @@
         </div>
         <div class="scard__content">
           <div class="scard__title">
-            <span class="material-symbols-rounded scard__icon-sym">access_time</span>
+            <span class="material-symbols-rounded scard__icon-sym">group</span>
             <span class="scard__value" id="stat-unbilled">—</span>
           </div>
           <button class="scard__action">Show</button>
@@ -165,6 +143,11 @@
             <span class="material-symbols-rounded search-box__ico">search</span>
             <input class="search-box__input" type="text" id="search-input" placeholder="Search members…" />
           </div>
+          <button class="table-icon-btn table-icon-btn--labeled" id="btn-filters" data-change="Moved — Filters button was previously in the page header filter row. Now lives in the table toolbar alongside other table-level actions.">
+            <span class="material-symbols-rounded">filter_list</span>
+            Filters
+            <span class="filter-badge" id="filter-badge" hidden></span>
+          </button>
           <button class="table-icon-btn table-icon-btn--labeled" data-change="Moved — Previously inside the batch actions dropdown. Now a standalone button in the table toolbar.">
             <span class="material-symbols-rounded">upload</span>
             Bulk update members
@@ -523,9 +506,12 @@
         </div>
       </div>
 
-      <!-- Account Type — interactive -->
+      <!-- Account Setup — interactive -->
       <div class="drawer__field" data-change-open="Account Type filter — lets you filter by Silent, Standard, SCIM, or SSO account type.">
-        <span class="drawer__field-label">Account Type</span>
+        <span class="drawer__field-label">
+          Account setup
+          <span class="material-symbols-rounded drawer-info-icon" data-tooltip="How this account was provisioned:&#10;&#10;Standard — invited manually&#10;Silent — auto-created by the desktop agent&#10;SSO — signed in via 'single sign-on'&#10;SCIM — auto-created from directory">info</span>
+        </span>
         <div class="drawer__select-wrap">
           <select class="drawer__select" id="drawer-account-type-select">
             <option value="">All</option>
@@ -704,7 +690,7 @@
   document.body.classList.add('hs-expanded');
 </script>
 <script src="assets/members-data.js?v=2"></script>
-<script src="assets/mockup.js?v=4"></script>
+<script src="assets/mockup.js?v=5"></script>
 
 <!-- ── Filters drawer wiring ────────────────────────────────────── -->
 <script>
@@ -724,74 +710,17 @@
 })();
 </script>
 
-<!-- ── Highlight changes — remove this script + CSS block to disable ────── -->
-<div class="highlight-tooltip" id="highlight-tooltip" hidden></div>
-<script id="highlight-changes">
-(function () {
-  const tooltip = document.getElementById('highlight-tooltip');
+<!-- ── Edit mode panel ──────────────────────────────────────── -->
+<div id="edit-panel">
+  <div class="ep-header">
+    <span class="ep-title">Edit mode</span>
+  </div>
+  <div class="ep-body" id="ep-body">
+    <p class="ep-empty">Select a highlighted element to edit it.</p>
+  </div>
+</div>
 
-  // ── Toggle ──────────────────────────────────────────────────────
-  const toggleEl = document.createElement('div');
-  toggleEl.className = 'silent-toggle';
-  toggleEl.setAttribute('role', 'switch');
-  toggleEl.setAttribute('aria-checked', 'false');
-  toggleEl.setAttribute('aria-label', 'Highlight changes');
-  toggleEl.setAttribute('tabindex', '0');
-  toggleEl.innerHTML = '<div class="silent-toggle__track"><div class="silent-toggle__thumb"></div></div><span class="silent-toggle__label">Highlight changes</span>';
-
-  function applyToggle(on) {
-    toggleEl.classList.toggle('is-on', on);
-    toggleEl.setAttribute('aria-checked', String(on));
-    document.body.classList.toggle('highlight-mode', on);
-    if (!on) tooltip.hidden = true;
-  }
-
-  toggleEl.addEventListener('click', () => applyToggle(!toggleEl.classList.contains('is-on')));
-  toggleEl.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); applyToggle(!toggleEl.classList.contains('is-on')); }
-  });
-
-  // Inject next to the Silent app toggle
-  const topbarLeft = document.querySelector('#hs-topbar .hs-topbar-left');
-  if (topbarLeft) {
-    const divider = document.createElement('div');
-    divider.className = 'hs-topbar-divider';
-    topbarLeft.appendChild(divider);
-    topbarLeft.appendChild(toggleEl);
-  }
-
-  // ── Tooltip ─────────────────────────────────────────────────────
-  document.addEventListener('mousemove', e => {
-    if (!document.body.classList.contains('highlight-mode')) return;
-    const target = e.target.closest('[data-change], [data-change-open], [data-change-wip]');
-    if (!target) { tooltip.hidden = true; return; }
-
-    if (target.dataset.changeOpen !== undefined) {
-      tooltip.innerHTML = `<span class="highlight-tooltip__title">New</span>${target.dataset.changeOpen}`;
-    } else if (target.dataset.changeWip !== undefined) {
-      tooltip.innerHTML = `<span class="highlight-tooltip__title" style="color:#3B82F6">In progress</span>${target.dataset.changeWip}`;
-    } else {
-      const parts = target.dataset.change.split(' — ');
-      const title = parts[0];
-      const body  = parts.slice(1).join(' — ');
-      tooltip.innerHTML = `<span class="highlight-tooltip__title" style="color:#FCD34D">${title}</span>${body || ''}`;
-    }
-    tooltip.hidden = false;
-
-    const pad = 14;
-    const tw = tooltip.offsetWidth;
-    const th = tooltip.offsetHeight;
-    let x = e.clientX + pad;
-    let y = e.clientY + pad;
-    if (x + tw > window.innerWidth - 8)  x = e.clientX - tw - pad;
-    if (y + th > window.innerHeight - 8) y = e.clientY - th - pad;
-    tooltip.style.left = x + 'px';
-    tooltip.style.top  = y + 'px';
-  });
-
-  document.addEventListener('mouseleave', () => { tooltip.hidden = true; });
-})();
-</script>
+<script src="assets/edit-mode.js"></script>
 
 </body>
 </html>
