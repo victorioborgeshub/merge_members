@@ -709,6 +709,38 @@ button { cursor: pointer; }
 .mtable tbody tr.row--grace td { background: #FFFBEB; }
 .mtable tbody tr.row--grace:hover td { background: #FEF3C7; }
 
+/* ── Table empty state (no filter matches) ───────────────────── */
+.mtable-empty-row td {
+  height: 280px;
+  border-right: 0;
+  background: var(--white);
+}
+.mtable-empty-row:hover td { background: var(--white); }
+.mtable-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+.mtable-empty__icon {
+  font-size: 32px;
+  color: var(--gray-400);
+  margin-bottom: 6px;
+}
+.mtable-empty__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gray-700);
+  margin: 0;
+}
+.mtable-empty__subtitle {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin: 0;
+}
+
 /* ── Sortable column header ───────────────────────────────────── */
 .th-sortable {
   cursor: pointer;

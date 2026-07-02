@@ -451,16 +451,29 @@
 
     // tbody
     const tbody = document.getElementById('members-tbody');
-    tbody.innerHTML = pageMembers.map(m => `
-      <tr${m.billing !== 'billed' ? ' data-grace' : ''}${m.status === 'removed' ? ' class="row--removed"' : ''}>
-        <td class="td-check">
-          <label class="cb-wrap">
-            <input type="checkbox" class="row-cb" />
-            <span class="cb-vis"></span>
-          </label>
-        </td>
-        ${cols.map(c => `<td>${renderCell(c, m)}</td>`).join('')}
-      </tr>`).join('');
+    if (pageMembers.length === 0) {
+      tbody.innerHTML = `
+        <tr class="mtable-empty-row">
+          <td colspan="${cols.length + 1}">
+            <div class="mtable-empty">
+              <span class="material-symbols-rounded mtable-empty__icon">search_off</span>
+              <p class="mtable-empty__title">No members match your filters</p>
+              <p class="mtable-empty__subtitle">Try adjusting or clearing your filters to see more results.</p>
+            </div>
+          </td>
+        </tr>`;
+    } else {
+      tbody.innerHTML = pageMembers.map(m => `
+        <tr${m.billing !== 'billed' ? ' data-grace' : ''}${m.status === 'removed' ? ' class="row--removed"' : ''}>
+          <td class="td-check">
+            <label class="cb-wrap">
+              <input type="checkbox" class="row-cb" />
+              <span class="cb-vis"></span>
+            </label>
+          </td>
+          ${cols.map(c => `<td>${renderCell(c, m)}</td>`).join('')}
+        </tr>`).join('');
+    }
 
     tbody.querySelectorAll('[data-open-merge]').forEach(el => {
       el.addEventListener('click', e => { e.stopPropagation(); openModal(0); });
