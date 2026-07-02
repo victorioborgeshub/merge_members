@@ -8,14 +8,6 @@
   toggleEl.setAttribute('aria-label', 'Edit mode');
   toggleEl.innerHTML = '<div class="silent-toggle__track"><div class="silent-toggle__thumb"></div></div><span class="silent-toggle__label">Edit mode</span>';
 
-  const topbarLeft = document.querySelector('#hs-topbar .hs-topbar-left');
-  if (topbarLeft) {
-    const divider = document.createElement('div');
-    divider.className = 'hs-topbar-divider';
-    topbarLeft.appendChild(divider);
-    topbarLeft.appendChild(toggleEl);
-  }
-
   // ── State ────────────────────────────────────────────────────────────
   const panel    = document.getElementById('edit-panel');
   const body     = document.getElementById('ep-body');

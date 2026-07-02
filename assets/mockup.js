@@ -1213,17 +1213,31 @@
     });
   });
 
-  // Billing Status drawer select
+  // Billing Status drawer select — staged, applied on "Apply filters"
   document.getElementById('drawer-billing-select')?.addEventListener('change', e => {
     billingFilter = e.target.value;
+  });
+
+  // Account Type drawer select — staged, applied on "Apply filters"
+  document.getElementById('drawer-account-type-select')?.addEventListener('change', e => {
+    accountTypeFilter = e.target.value;
+  });
+
+  // Apply filters
+  document.getElementById('filters-drawer-apply')?.addEventListener('click', () => {
     syncCardButtons();
     updateFilterBadge();
     applyFilters();
   });
 
-  // Account Type drawer select
-  document.getElementById('drawer-account-type-select')?.addEventListener('change', e => {
-    accountTypeFilter = e.target.value;
+  // Clear filters
+  document.getElementById('filters-drawer-clear')?.addEventListener('click', () => {
+    billingFilter = '';
+    accountTypeFilter = '';
+    const accountTypeSelect = document.getElementById('drawer-account-type-select');
+    if (accountTypeSelect) accountTypeSelect.value = '';
+    syncCardButtons();
+    syncBillingSelect();
     updateFilterBadge();
     applyFilters();
   });
